@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import GuestGuard from 'utils/route-guard/GuestGuard';
 import CommonLayout from 'layout/CommonLayout';
 import Loadable from 'components/Loadable';
+import Login from 'pages/auth/auth1/login';
 
 // render - login
 const AuthLogin = Loadable(lazy(() => import('pages/auth/auth2/login2')));
@@ -49,7 +50,11 @@ const LoginRoutes = {
         {
           path: 'code-verification',
           element: <AuthCodeVerification />
-        }
+        },
+        {
+          path: 'login-clinic',
+          element: <Login />
+        },
       ]
     }
   ]

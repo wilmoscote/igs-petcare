@@ -7,6 +7,7 @@ import Loadable from 'components/Loadable';
 import ComponentsRoutes from './ComponentsRoutes';
 import LoginRoutes from './LoginRoutes';
 import MainRoutes from './MainRoutes';
+import ClinicRoutes from './ClinicRoutes';
 
 // render - landing page
 const PagesLanding = Loadable(lazy(() => import('pages/landing')));
@@ -17,6 +18,7 @@ export default function ThemeRoutes() {
   return useRoutes([
     MainRoutes,
     LoginRoutes,
+    // ClinicRoutes,
     ComponentsRoutes,
   ]);
 }

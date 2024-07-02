@@ -5,7 +5,6 @@ import MainLayout from 'layout/MainLayout';
 import CommonLayout from 'layout/CommonLayout';
 import Loadable from 'components/Loadable';
 import AuthGuard from 'utils/route-guard/AuthGuard';
-import Login from 'pages/auth/auth1/login';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
@@ -131,15 +130,15 @@ const PricingPage2 = Loadable(lazy(() => import('pages/extra-pages/price/price2'
 const ServicesList = Loadable(lazy(() => import('pages/services/ServicesList')));
 // ==============================|| MAIN ROUTES ||============================== //
 
-const MainRoutes = {
-  path: '/',
+const ClinicRoutes = {
+  path: 'clinic',
   children: [
     {
-      path: '/',
+      path: '/clinic',
       element: (
         // <AuthGuard>
           <MainLayout />
-        // </AuthGuard>
+        //  </AuthGuard>
       ),
       children: [
         {
@@ -169,15 +168,8 @@ const MainRoutes = {
             },
           ]
         },
-        {
-          path: 'clinic',
-          children: [
-            {
-              path: 'login',
-              element: <Login />
-            },
-          ]
-        },
+
+
         {
           path: 'widget',
           children: [
@@ -643,4 +635,4 @@ const MainRoutes = {
   ]
 };
 
-export default MainRoutes;
+export default ClinicRoutes;
