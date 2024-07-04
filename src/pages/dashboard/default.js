@@ -1,6 +1,6 @@
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Button, Dialog, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Dialog, Grid, Stack, Typography } from '@mui/material';
 
 // project-imports
 import EcommerceDataCard from 'components/cards/statistics/EcommerceDataCard';
@@ -20,89 +20,81 @@ import WelcomeBanner from 'sections/dashboard/default/WelcomeBanner';
 import { FormattedMessage } from 'react-intl';
 import CustomerCard from 'sections/apps/customer/CustomerCard';
 import NoPetsMessage from 'components/NoPetsMessage';
-import { useState } from 'react';
-import dogMemoji from 'assets/images/pets/dogMemoji.webp'
-import catMemoji from 'assets/images/pets/catMemoji.webp'
-import catMemoji1 from 'assets/images/pets/catMemoji1.webp'
+import { useEffect, useState } from 'react';
 import { PopupTransition } from 'components/@extended/Transitions';
 import AddPet from 'components/AddPet';
-
-// ==============================|| DASHBOARD - DEFAULT ||============================== //
-const data = [
-  {
-    id: 1,
-    name: 'Roku',
-    species: 'Perro',
-    breed: 'Labrador',
-    sex: 'Male',
-    dateOfBirth: '01/01/2020',
-    avatar: dogMemoji
-  },
-  {
-    id: 2,
-    name: 'Max',
-    species: 'Perro',
-    breed: 'Golden Retriever',
-    sex: 'Male',
-    dateOfBirth: '02/15/2018',
-    avatar: dogMemoji
-  },
-  {
-    id: 4,
-    name: 'Venus',
-    species: 'Perro',
-    breed: 'Puddle',
-    sex: 'Male',
-    dateOfBirth: '11/11/2018',
-    avatar: dogMemoji
-  },
-  {
-    id: 3,
-    name: 'Luna',
-    species: 'Gato',
-    breed: 'Persian',
-    sex: 'Female',
-    dateOfBirth: '05/10/2019',
-    avatar: catMemoji1
-  }
-];
+import { mockPetsData as data } from 'utils/mockData';
+import useAuth from 'hooks/useAuth';
+import { useAuthStore } from 'store/useAuthStore';
 
 const DashboardDefault = () => {
   const theme = useTheme();
+  const { user } = useAuthStore()
+  const [loading, setLoading] = useState(true);
+  const [pets, setPets] = useState(null)
+  const { getPets } = useAuth();
   const [mockPetsData, setMockPetsData] = useState(data)
   const [add, setAdd] = useState(false);
 
   const handleAdd = () => {
     setAdd(!add);
   };
+
+  const getMyPets = async () => {
+    try {
+      setLoading(true)
+      const response = await getPets();
+      // console.log(response.data)
+      if (response.data?.success) {
+        setPets(response.data?.data)
+      } else {
+        console.error(response.data.message)
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    getMyPets()
+  }, [])
+
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       <Grid item xs={12} sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Typography variant="h2">
           <FormattedMessage id="my-pets" />
         </Typography>
-        {mockPetsData && mockPetsData.length > 0 && (
+
+        {pets && pets?.length > 0 && (
           <Button variant="contained" startIcon={<Add />} onClick={handleAdd}>
             <FormattedMessage id="add-pet" />
           </Button>
         )}
       </Grid>
-      {mockPetsData && mockPetsData.length > 0 ? (
-        mockPetsData.map(pet =>
-          <Grid item xs={12} sm={6} lg={3} key={pet.id}>
-            <CustomerCard customer={pet} />
-          </Grid>
-        )
+
+      {loading ? (
+        <Box sx={{ display: "flex", flexDirection: "column", py: 10, width: "100%", justifyContent: "center", alignItems: "center" }}>
+          <CircularProgress />
+        </Box>
       ) : (
-        <Grid item xs={12} >
-          <NoPetsMessage />
-        </Grid>
-      )}
-      {/* <Grid item xs={12}>
-        <Button fullWidth startIcon={<Briefcase />} variant="contained" size="large">
-          Ver servicios
-        </Button>
-      </Grid> */}
+        <>
+          {pets && pets?.length > 0 ? (
+            pets?.map(pet =>
+              <Grid item xs={12} sm={6} lg={3} key={pet.id}>
+                <CustomerCard customer={pet} getPets={getMyPets} />
+              </Grid>
+            )
+          ) : (
+            <Grid item xs={12} >
+              <NoPetsMessage handleAdd={handleAdd} />
+            </Grid>
+          )}
+        </>
+      )
+      }
       <Dialog
         maxWidth="sm"
         fullWidth
@@ -111,9 +103,9 @@ const DashboardDefault = () => {
         open={add}
         sx={{ '& .MuiDialog-paper': { p: 0 } }}
       >
-        <AddPet onCancel={handleAdd} />
+        <AddPet onCancel={handleAdd} getMyPets={getMyPets} />
       </Dialog>
-    </Grid>
+    </Grid >
   );
 };
 

@@ -19,6 +19,7 @@ import { ThemeMode } from 'config';
 // assets
 import avatar1 from 'assets/images/users/avatar-6.png';
 import { Setting2, Profile, Logout } from 'iconsax-react';
+import { useAuthStore } from 'store/useAuthStore';
 
 // tab panel wrapper
 function TabPanel(props) {
@@ -56,11 +57,12 @@ function a11yProps(index) {
 const ProfilePage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-
-  const { logout, user } = useAuth();
+  const { setLogout, user } = useAuthStore();
+  const { logout } = useAuth();
   const handleLogout = async () => {
     try {
       await logout();
+      setLogout()
       navigate(`/login`, {
         state: {
           from: ''
@@ -108,7 +110,7 @@ const ProfilePage = () => {
         aria-haspopup="true"
         onClick={handleToggle}
       >
-        <Stack direction="row" spacing={1.25} alignItems="left" sx={{px: 2}}>
+        <Stack direction="row" spacing={1.25} alignItems="left" sx={{ px: 2 }}>
           <Avatar alt="profile user" src={avatar1} />
           <Stack>
             <Typography variant="subtitle1" color="black" textAlign={"left"}>{user?.name ?? "Usuario"}</Typography>

@@ -3,7 +3,7 @@ import { Card, CardContent, Typography, Button, Box } from '@mui/material';
 import { Add } from 'iconsax-react';
 import { FormattedMessage } from 'react-intl';
 
-const NoPetsMessage = () => {
+const NoPetsMessage = ({ handleAdd }) => {
     return (
         <Box display="flex" justifyContent="center" alignItems="center">
             <Card
@@ -24,7 +24,7 @@ const NoPetsMessage = () => {
                     <Typography variant="body1" color="text.secondary" paragraph>
                         <FormattedMessage id="no-pets-desc" />
                     </Typography>
-                    <Button startIcon={<Add />} variant="contained" size="large">
+                    <Button startIcon={<Add />} variant="contained" size="large" onClick={handleAdd}>
                         <FormattedMessage id="add-pet" />
                     </Button>
                 </CardContent>

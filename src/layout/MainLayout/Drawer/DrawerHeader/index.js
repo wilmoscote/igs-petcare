@@ -26,6 +26,7 @@ const DrawerHeader = ({ open }) => {
       theme={theme}
       open={open}
       sx={{
+        // backgroundColor: "white",
         minHeight: isHorizontal ? 'unset' : HEADER_HEIGHT,
         width: isHorizontal ? { xs: '100%', lg: DRAWER_WIDTH + 50 } : 'inherit',
         paddingTop: isHorizontal ? { xs: '10px', lg: '0' } : '8px',

@@ -39,12 +39,18 @@ import ListSmallCard from './export-pdf/ListSmallCard';
 // assets
 import { Briefcase, CallCalling, Link2, Location, Man, More, Sms, Woman } from 'iconsax-react';
 import AddPet from 'components/AddPet';
+import usePetStore from 'store/usePetStore';
+import { useNavigate } from 'react-router';
+
+import { formatAge } from 'utils/petUtils';
 
 const avatarImage = require.context('assets/images/users', true);
 
 // ==============================|| CUSTOMER - CARD ||============================== //
 
-const CustomerCard = ({ customer }) => {
+const CustomerCard = ({ customer, getPets }) => {
+  const navigate = useNavigate();
+  const { setSelectedPet } = usePetStore();
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -91,12 +97,16 @@ const CustomerCard = ({ customer }) => {
                 }
               >
                 <ListItemAvatar>
-                  <Avatar alt={customer.name} src={customer.avatar ? customer.avatar : avatarImage(`./avatar-${Math.floor((Math.random() * 8) + 1)}.png`)} />
+                  <Avatar alt={customer.name} src={customer.img_profile ? customer.img_profile : avatarImage(`./avatar-${Math.floor((Math.random() * 8) + 1)}.png`)} />
                 </ListItemAvatar>
-                <ListItemText
-                  primary={<Typography variant="subtitle1" color={customer.sex === "Male" ? "#2CCCE4" : "#F47373"} >{customer.name} {customer.sex === "Male" ? <Man size="13" /> : <Woman size="13" />} </Typography>}
-                  secondary={<Typography color="text.secondary">{customer.species} - {customer.breed}</Typography>}
-                />
+                <Box>
+                  <ListItemText
+                    primary={<Typography variant="subtitle1" color={customer.gender === "male" ? "#2CCCE4" : "#F47373"} >{customer.name} {customer.gender === "male" ? <Man size="13" /> : <Woman size="13" />} </Typography>}
+                    secondary={<Typography color="text.secondary" mt={0.3}>{customer.specie?.name || ""}, {customer.breed?.name || ""}</Typography>}
+                    sx={{mb: 0}}
+                  />
+                  <Typography color="text.secondary" mt={0.3}>{formatAge(customer.birthday_date) || ""}</Typography>
+                </Box>
               </ListItem>
             </List>
             <Menu
@@ -125,117 +135,27 @@ const CustomerCard = ({ customer }) => {
               <MenuItem onClick={(e) => {
                 handleAdd()
                 handleMenuClose()
-                }}>Editar</MenuItem>
+              }}>Editar</MenuItem>
               <MenuItem onClick={() => {
                 handleAlertClose()
                 handleMenuClose()
-                }}>Eliminar</MenuItem>
+              }}>Eliminar</MenuItem>
             </Menu>
           </Grid>
           {/* <Grid item xs={12}>
             <Divider />
           </Grid> */}
           <Grid item xs={12}>
-            <Button fullWidth startIcon={<Briefcase />} variant="contained" size="large">
+            <Button fullWidth startIcon={<Briefcase />} variant="contained" size="large"
+              onClick={() => {
+                setSelectedPet(customer);
+                navigate("/services");
+              }}
+            >
               Ver servicios
             </Button>
           </Grid>
-          {/* <Grid item xs={12}>
-            <Typography>Hello, {customer.about}</Typography>
-          </Grid> */}
-          {/* <Grid item xs={12}>
-            <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
-              <Grid item xs={6}>
-                <List
-                  sx={{
-                    p: 0,
-                    overflow: 'hidden',
-                    '& .MuiListItem-root': { px: 0, py: 0.5 },
-                    '& .MuiListItemIcon-root': { minWidth: 28 }
-                  }}
-                >
-                  <ListItem>
-                    <ListItemIcon>
-                      <Sms size={18} />
-                    </ListItemIcon>
-                    <ListItemText primary={<Typography color="text.secondary">{customer.email}</Typography>} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon>
-                      <CallCalling size={18} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={
-                        <Typography color="text.secondary">
-                          <PatternFormat displayType="text" format="+1 (###) ###-####" mask="_" defaultValue={customer.contact} />
-                        </Typography>
-                      }
-                    />
-                  </ListItem>
-                </List>
-              </Grid>
-              <Grid item xs={6}>
-                <List
-                  sx={{ p: 0, overflow: 'hidden', '& .MuiListItem-root': { px: 0, py: 0.5 }, '& .MuiListItemIcon-root': { minWidth: 28 } }}
-                >
-                  <ListItem>
-                    <ListItemIcon>
-                      <Location size={18} />
-                    </ListItemIcon>
-                    <ListItemText primary={<Typography color="text.secondary">{customer.country}</Typography>} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon>
-                      <Link2 size={18} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={
-                        <Link href="https://google.com" target="_blank" sx={{ textTransform: 'lowercase' }}>
-                          https://{customer.firstName}.en
-                        </Link>
-                      }
-                    />
-                  </ListItem>
-                </List>
-              </Grid>
-            </Grid>
-          </Grid> */}
-          {/* <Grid item xs={12}>
-            <Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  listStyle: 'none',
-                  p: 0.5,
-                  m: 0
-                }}
-                component="ul"
-              >
-                {customer.skills.map((skill, index) => (
-                  <ListItem disablePadding key={index} sx={{ width: 'auto', pr: 0.75, pb: 0.75 }}>
-                    <Chip color="secondary" variant="outlined" size="small" label={skill} sx={{ color: 'text.secondary' }} />
-                  </ListItem>
-                ))}
-              </Box>
-            </Box>
-          </Grid> */}
         </Grid>
-        {/* <Stack
-          direction="row"
-          className="hideforPDf"
-          alignItems="center"
-          spacing={1}
-          justifyContent="space-between"
-          sx={{ mt: 'auto', mb: 0, pt: 2.25 }}
-        >
-          <Typography variant="caption" color="text.secondary">
-            Updated in {customer.time}
-          </Typography>
-          <Button variant="outlined" size="small" onClick={handleClickOpen}>
-            Preview
-          </Button>
-        </Stack> */}
       </MainCard>
 
       {/* edit customer dialog */}
@@ -247,10 +167,10 @@ const CustomerCard = ({ customer }) => {
         open={add}
         sx={{ '& .MuiDialog-paper': { p: 0 } }}
       >
-        <AddPet pet={customer} onCancel={handleAdd} />
+        <AddPet pet={customer} onCancel={handleAdd} getMyPets={getPets} />
       </Dialog>
       {/* <CustomerPreview customer={customer} open={open} onClose={handleClose} /> */}
-      <AlertCustomerDelete title={customer.name} open={openAlert} handleClose={handleAlertClose} />
+      <AlertCustomerDelete title={customer} open={openAlert} handleClose={handleAlertClose} getPets={getPets} />
     </>
   );
 };

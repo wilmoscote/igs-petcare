@@ -27,7 +27,6 @@ import {
     Typography
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 // third-party
@@ -46,6 +45,8 @@ import { ThemeMode } from 'config';
 // assets
 import { Camera, Pet, Trash } from 'iconsax-react';
 import AlertCustomerDelete from 'sections/apps/customer/AlertCustomerDelete';
+import useAuth from 'hooks/useAuth';
+import { useAuthStore } from 'store/useAuthStore';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -69,12 +70,36 @@ const getInitialValues = (customer) => {
 
 const allStatus = ['Complicated', 'Single', 'Relationship'];
 
-const AddPet = ({ pet, onCancel }) => {
+const AddPet = ({ pet, onCancel, getMyPets }) => {
+    const { user } = useAuthStore();
+    const { getSpecies, createPet, editPet } = useAuth();
     const theme = useTheme();
     const isCreating = !pet;
-
+    const [species, setSpecies] = useState(null);
+    const [breeds, setBreeds] = useState([]);
     const [selectedImage, setSelectedImage] = useState(undefined);
-    const [avatar, setAvatar] = useState(pet?.avatar ? pet?.avatar : null);
+    const [avatar, setAvatar] = useState(pet?.img_profile ? pet?.img_profile : null);
+
+    const fetchSpecies = async () => {
+        try {
+            const response = await getSpecies();
+            if (response.data?.success) {
+                setSpecies(response.data?.data);
+                if (pet) {
+                    const selectedSpecies = response.data?.data.find(specie => specie.id === pet.specie_id);
+                    setBreeds(selectedSpecies?.breeds || []);
+                }
+            } else {
+                console.error(response.data.message);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    useEffect(() => {
+        fetchSpecies();
+    }, []);
 
     useEffect(() => {
         if (selectedImage) {
@@ -85,7 +110,14 @@ const AddPet = ({ pet, onCancel }) => {
     const PetSchema = Yup.object().shape({
         name: Yup.string().max(255).required('El nombre es obligatorio'),
         species: Yup.string().required('La especie es obligatoria'),
-        breed: Yup.string().required('La raza es obligatoria'),
+        breed: Yup.string().when('species', {
+            is: (value) => {
+                const selectedSpecies = species?.find(specie => specie.id === value);
+                return selectedSpecies?.breeds?.length > 0;
+            },
+            then: (schema) => schema.required('La raza es obligatoria'),
+            otherwise: (schema) => schema.notRequired()
+        }),
         sex: Yup.string().required('El sexo es obligatorio'),
         dateOfBirth: Yup.string().required('La fecha de nacimiento es obligatoria')
     });
@@ -100,64 +132,155 @@ const AddPet = ({ pet, onCancel }) => {
     const formik = useFormik({
         initialValues: {
             name: pet?.name || '',
-            species: pet?.species || '',
-            breed: pet?.breed || '',
-            sex: pet?.sex || '',
-            dateOfBirth: pet?.dateOfBirth || ''
+            species: pet?.specie_id || '',
+            breed: pet?.breed_id || '',
+            sex: pet?.gender || '',
+            dateOfBirth: pet?.birthday_date || ''
         },
         validationSchema: PetSchema,
-        onSubmit: (values, { setSubmitting }) => {
-            try {
-                // const newCustomer = {
-                //   name: values.name,
-                //   email: values.email,
-                //   location: values.location,
-                //   orderStatus: values.orderStatus
-                // };
+        onSubmit: async (values, { setSubmitting }) => {
 
-                if (pet) {
-                    // dispatch(updateCustomer(customer.id, newCustomer)); - update
+            if (isCreating) {
+                try {
+                    const formData = new FormData();
+                    formData.append('user_id', user?.id);
+                    formData.append('specie_id', values.species);
+                    if (selectedImage) formData.append("img_profile", selectedImage);
+                    if (values.breed) {
+                        formData.append('breed_id', values.breed);
+                    }
+                    formData.append('gender', values.sex);
+                    formData.append('birthday_date', values.dateOfBirth);
+                    formData.append('name', values.name);
+
+                    const response = await createPet(formData);
+
+                    if (response.data.success) {
+                        dispatch(
+                            openSnackbar({
+                                open: true,
+                                message: 'Mascota añadida correctamente.',
+                                variant: 'alert',
+                                alert: {
+                                    color: 'success'
+                                },
+                                close: true
+                            })
+                        );
+                        getMyPets()
+                    } else {
+                        dispatch(
+                            openSnackbar({
+                                open: true,
+                                message: 'Error al añadir mascota.',
+                                variant: 'alert',
+                                alert: {
+                                    color: 'error'
+                                },
+                                close: true
+                            })
+                        );
+                    }
+                    setSubmitting(false);
+                    onCancel();
+                } catch (error) {
+                    console.error(error);
+                    setSubmitting(false);
                     dispatch(
                         openSnackbar({
                             open: true,
-                            message: 'Customer update successfully.',
+                            message: 'Error al añadir mascota.',
                             variant: 'alert',
                             alert: {
-                                color: 'success'
+                                color: 'error'
                             },
-                            close: false
+                            close: true
                         })
                     );
-                } else {
-                    // dispatch(createCustomer(newCustomer)); - add
-                    dispatch(
-                        openSnackbar({
-                            open: true,
-                            message: 'Customer added successfully.',
-                            variant: 'alert',
-                            alert: {
-                                color: 'success'
-                            },
-                            close: false
-                        })
-                    );
+                } finally {
+                    setSubmitting(false);
                 }
+            } else {
+                //EDITAR MASCOTA
+                try {
+                    const formData = new FormData();
+                    formData.append('user_id', user?.id);
+                    formData.append('specie_id', values.species);
+                    if (selectedImage) formData.append("img_profile", selectedImage);
+                    if (values.breed) {
+                        formData.append('breed_id', values.breed);
+                    }
+                    formData.append('gender', values.sex);
+                    formData.append('birthday_date', values.dateOfBirth);
+                    formData.append('name', values.name);
 
-                setSubmitting(false);
-                onCancel();
-            } catch (error) {
-                console.error(error);
+                    const response = await editPet(formData, pet?.uuid);
+
+                    if (response.data.success) {
+                        dispatch(
+                            openSnackbar({
+                                open: true,
+                                message: 'Mascota editada correctamente.',
+                                variant: 'alert',
+                                alert: {
+                                    color: 'success'
+                                },
+                                close: true
+                            })
+                        );
+                        getMyPets()
+                    } else {
+                        dispatch(
+                            openSnackbar({
+                                open: true,
+                                message: 'Error al editar mascota.',
+                                variant: 'alert',
+                                alert: {
+                                    color: 'error'
+                                },
+                                close: true
+                            })
+                        );
+                    }
+
+                    setSubmitting(false);
+                    onCancel();
+                } catch (error) {
+                    console.error(error);
+                    setSubmitting(false);
+                    dispatch(
+                        openSnackbar({
+                            open: true,
+                            message: 'Error al añadir mascota.',
+                            variant: 'alert',
+                            alert: {
+                                color: 'error'
+                            },
+                            close: true
+                        })
+                    );
+                } finally {
+                    setSubmitting(false);
+                }
             }
         }
     });
 
     const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue } = formik;
 
+    const handleSpeciesChange = (event) => {
+        const speciesId = event.target.value;
+        const selectedSpecies = species.find((specie) => specie.id === speciesId);
+        setFieldValue('species', speciesId);
+        setBreeds(selectedSpecies?.breeds || []);
+        setFieldValue('breed', '');
+    };
+
     return (
         <>
             <FormikProvider value={formik}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
+                    <form autoComplete="off" noValidate onSubmit={handleSubmit}>
                         <DialogTitle>{pet ? 'Editar Mascota' : 'Nueva Mascota'}</DialogTitle>
                         <Divider />
                         <DialogContent sx={{ p: 2.5 }}>
@@ -184,7 +307,7 @@ const AddPet = ({ pet, onCancel }) => {
                                                     position: 'absolute',
                                                     top: 0,
                                                     left: 0,
-                                                    backgroundColor: theme.palette.mode === ThemeMode.DARK ? 'rgba(255, 255, 255, .75)' : 'rgba(0,0,0,.65)',
+                                                    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .75)' : 'rgba(0,0,0,.65)',
                                                     width: '100%',
                                                     height: '100%',
                                                     opacity: 0,
@@ -194,7 +317,7 @@ const AddPet = ({ pet, onCancel }) => {
                                                 }}
                                             >
                                                 <Stack spacing={0.5} alignItems="center">
-                                                    <Camera style={{ color: theme.palette.secondary.lighter, fontSize: '2rem' }} />
+                                                    <Camera style={{ color: theme.palette.secondary.light, fontSize: '2rem' }} />
                                                     <Typography sx={{ color: 'secondary.lighter' }}>Upload</Typography>
                                                 </Stack>
                                             </Box>
@@ -232,12 +355,14 @@ const AddPet = ({ pet, onCancel }) => {
                                                         id="pet-species"
                                                         displayEmpty
                                                         {...getFieldProps('species')}
+                                                        onChange={handleSpeciesChange}
                                                         input={<OutlinedInput id="select-pet-species" />}
                                                         error={Boolean(touched.species && errors.species)}
                                                     >
-                                                        <MenuItem value=""><Typography variant="subtitle1">Seleccione la especie</Typography></MenuItem>
-                                                        <MenuItem value="Dog">Perro</MenuItem>
-                                                        <MenuItem value="Cat">Gato</MenuItem>
+                                                        <MenuItem value="" disabled><Typography variant="subtitle1">Seleccione la especie</Typography></MenuItem>
+                                                        {species && species.map((specie) => (
+                                                            <MenuItem value={specie.id} key={specie.id}>{specie.name}</MenuItem>
+                                                        ))}
                                                     </Select>
                                                     {touched.species && errors.species && (
                                                         <FormHelperText error>{errors.species}</FormHelperText>
@@ -248,19 +373,28 @@ const AddPet = ({ pet, onCancel }) => {
                                         <Grid item xs={12}>
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-breed">Raza</InputLabel>
-                                                <TextField
-                                                    fullWidth
-                                                    id="pet-breed"
-                                                    placeholder="Ingrese la raza de la mascota"
-                                                    {...getFieldProps('breed')}
-                                                    error={Boolean(touched.breed && errors.breed)}
-                                                    helperText={touched.breed && errors.breed}
-                                                />
+                                                <FormControl fullWidth>
+                                                    <Select
+                                                        id="pet-breed"
+                                                        displayEmpty
+                                                        {...getFieldProps('breed')}
+                                                        input={<OutlinedInput id="select-pet-breed" />}
+                                                        error={Boolean(touched.breed && errors.breed)}
+                                                    >
+                                                        <MenuItem value="" disabled><Typography variant="subtitle1">Seleccione la raza</Typography></MenuItem>
+                                                        {breeds && breeds.map((breed) => (
+                                                            <MenuItem value={breed.id} key={breed.id}>{breed.name}</MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                    {touched.breed && errors.breed && (
+                                                        <FormHelperText error>{errors.breed}</FormHelperText>
+                                                    )}
+                                                </FormControl>
                                             </Stack>
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Stack spacing={1.25}>
-                                                <InputLabel htmlFor="pet-sex">Sexo</InputLabel>
+                                                <InputLabel htmlFor="pet-sex">Género</InputLabel>
                                                 <FormControl fullWidth>
                                                     <Select
                                                         id="pet-sex"
@@ -269,9 +403,9 @@ const AddPet = ({ pet, onCancel }) => {
                                                         input={<OutlinedInput id="select-pet-sex" />}
                                                         error={Boolean(touched.sex && errors.sex)}
                                                     >
-                                                        <MenuItem value=""><Typography variant="subtitle1">Seleccione el sexo</Typography></MenuItem>
-                                                        <MenuItem value="Male">Macho</MenuItem>
-                                                        <MenuItem value="Female">Hembra</MenuItem>
+                                                        <MenuItem value="" disabled><Typography variant="subtitle1">Seleccione el género</Typography></MenuItem>
+                                                        <MenuItem value="male">Macho</MenuItem>
+                                                        <MenuItem value="female">Hembra</MenuItem>
                                                     </Select>
                                                     {touched.sex && errors.sex && (
                                                         <FormHelperText error>{errors.sex}</FormHelperText>
@@ -283,12 +417,17 @@ const AddPet = ({ pet, onCancel }) => {
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-dateOfBirth">Fecha de Nacimiento</InputLabel>
                                                 <TextField
+                                                    id="date"
+                                                    type="date"
                                                     fullWidth
-                                                    id="pet-dateOfBirth"
                                                     placeholder="MM/DD/YYYY"
                                                     {...getFieldProps('dateOfBirth')}
+                                                    sx={{ mt: 1 }}
                                                     error={Boolean(touched.dateOfBirth && errors.dateOfBirth)}
                                                     helperText={touched.dateOfBirth && errors.dateOfBirth}
+                                                    InputLabelProps={{
+                                                        shrink: true
+                                                    }}
                                                 />
                                             </Stack>
                                         </Grid>
@@ -320,10 +459,10 @@ const AddPet = ({ pet, onCancel }) => {
                                 </Grid>
                             </Grid>
                         </DialogActions>
-                    </Form>
+                    </form>
                 </LocalizationProvider>
             </FormikProvider>
-            {!isCreating && <AlertCustomerDelete title={pet.name} open={openAlert} handleClose={handleAlertClose} />}
+            {!isCreating && <AlertCustomerDelete title={pet} open={openAlert} handleClose={handleAlertClose} getPets={getMyPets} />}
         </>
     );
 };

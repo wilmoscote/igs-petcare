@@ -3,42 +3,12 @@ import { Grid, Card, CardContent, Typography, TextField, Box, Button, useTheme, 
 import { Health, Briefcase, Worm, ShieldTick, Microchip, Scissors, Scissor, SearchNormal1 } from 'iconsax-react';
 import MainCard from 'components/MainCard';
 import { FormattedMessage } from 'react-intl';
-
-const mockServicesData = [
-    {
-        id: 1,
-        name: 'Examen de Bienestar',
-        icon: <Health size="32" variant="Bulk" />,
-    },
-    {
-        id: 2,
-        name: 'Vacunas',
-        icon: <Briefcase size="32" variant="Bulk" />,
-    },
-    {
-        id: 3,
-        name: 'Desparasitación',
-        icon: <Briefcase size="32" variant="Bulk" />,
-    },
-    {
-        id: 4,
-        name: 'Prevención de Pulgas y Garrapatas',
-        icon: <Briefcase size="32" variant="Bulk" />,
-    },
-    {
-        id: 5,
-        name: 'Microchip ID',
-        icon: <Briefcase size="32" variant="Bulk" />,
-    },
-    {
-        id: 6,
-        name: 'Esterilización/Castración',
-        icon: <Scissor size="32" variant="Bulk" />,
-    },
-];
+import { mockServicesData } from 'utils/mockData';
+import { useNavigate } from 'react-router';
 
 const ServicesList = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
     const [search, setSearch] = useState('');
 
     const filteredServices = mockServicesData.filter(service =>
@@ -77,7 +47,11 @@ const ServicesList = () => {
                                 flexDirection: 'row',
                                 alignItems: "center"
                             }
-                        }}>
+                        }}
+                            onClick={(e) => {
+                                navigate(`/services/detail/${service.id}`)
+                            }}
+                        >
                             <span style={{ color: theme.palette.primary.main }}>{service.icon}</span>
                             <Typography variant="h6" align="center" sx={{ ml: 2, fontWeight: "500" }}>
                                 {service.name}

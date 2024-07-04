@@ -9,10 +9,61 @@ import { PopupTransition } from 'components/@extended/Transitions';
 
 // assets
 import { Trash } from 'iconsax-react';
+import { useState } from 'react';
+import LoadingButton from 'components/@extended/LoadingButton';
+import useAuth from 'hooks/useAuth';
+import { dispatch } from 'store';
+import { openSnackbar } from 'store/reducers/snackbar';
 
 // ==============================|| CUSTOMER - DELETE ||============================== //
 
-export default function AlertCustomerDelete({ title, open, handleClose }) {
+export default function AlertCustomerDelete({ title, open, handleClose, getPets }) {
+  const [loading, setLoading] = useState(false)
+  const { deletePet } = useAuth();
+
+  const handleDelete = async () => {
+    try {
+      setLoading(true)
+      const response = await deletePet(title.uuid);
+      console.log(response.data)
+      if (response.data?.success) {
+        // setPets(response.data?.data)
+        if (response.data?.success) {
+          dispatch(
+            openSnackbar({
+              open: true,
+              message: 'Mascota eliminada correctamente.',
+              variant: 'alert',
+              alert: {
+                color: 'success'
+              },
+              close: true
+            })
+          );
+          getPets()
+        }
+        handleClose(true)
+      } else {
+        console.error(response.data.message)
+        dispatch(
+          openSnackbar({
+            open: true,
+            message: 'Error al eliminar mascota.',
+            variant: 'alert',
+            alert: {
+              color: 'error'
+            },
+            close: true
+          })
+        );
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <Dialog
       open={open}
@@ -33,18 +84,18 @@ export default function AlertCustomerDelete({ title, open, handleClose }) {
               ¿Está seguro que desea eliminar esta mascota?
             </Typography>
             <Typography align="center">
-              <Typography variant="h5" component="span">{title}
+              <Typography variant="h5" component="span">{title?.name}
               </Typography>
             </Typography>
           </Stack>
 
           <Stack direction="row" spacing={2} sx={{ width: 1 }}>
-            <Button fullWidth onClick={() => handleClose(false)} color="secondary" variant="outlined">
+            <Button disabled={loading} fullWidth onClick={() => handleClose(false)} color="secondary" variant="outlined">
               Cancelar
             </Button>
-            <Button fullWidth color="error" variant="contained" onClick={() => handleClose(true)} autoFocus>
+            <LoadingButton loading={loading} fullWidth color="error" variant="contained" onClick={handleDelete} autoFocus>
               Eliminar
-            </Button>
+            </LoadingButton>
           </Stack>
         </Stack>
       </DialogContent>

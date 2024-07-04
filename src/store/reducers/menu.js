@@ -17,8 +17,8 @@ const initialState = {
 // ==============================|| SLICE - MENU ||============================== //
 
 export const fetchMenu = createAsyncThunk('', async () => {
-  const response = await axios.get('/api/menu/dashboard');
-  return response.data;
+  // const response = await axios.get('/api/menu/dashboard');
+  return {};
 });
 
 const menu = createSlice({

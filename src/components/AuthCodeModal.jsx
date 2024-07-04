@@ -2,10 +2,12 @@ import { Backdrop, Button, Divider, Fade, CardContent, Modal, Stack, Typography,
 import AuthCodeVerification from './AuthCodeVerification';
 import { CloseCircle, CloseSquare } from 'iconsax-react'
 import MainCard from './MainCard';
+import useAuth from 'hooks/useAuth';
 
 
-const AuthCodeModal = ({ open, handleClose, email }) => {
+const AuthCodeModal = ({ open, handleClose, email, dni }) => {
     const theme = useTheme();
+    
 
     return (
         <Modal
@@ -30,9 +32,9 @@ const AuthCodeModal = ({ open, handleClose, email }) => {
                         </IconButton>
                     </Stack>
                     <Typography variant="h4" sx={{ fontWeight: "bold", mb: "28px" }} textAlign="center">Código OTP</Typography>
-                    <Typography variant="body1" sx={{ mb: "28px" }} textAlign="center">Se ha enviado un código OTP a la dirección: <span style={{color: theme.palette.primary.main}} >{email || "example@igroupsolution.com"}</span>, por favor revisa el correo para validar el acceso.</Typography>
+                    <Typography variant="body1" sx={{ mb: "28px" }} textAlign="center">Se ha enviado un código OTP a la dirección: <span style={{ color: theme.palette.primary.main }} >{email || "example@igroupsolution.com"}</span>, por favor revisa el correo para validar el acceso.</Typography>
                     <Stack sx={{ mb: 4 }}>
-                        <AuthCodeVerification email={email} />
+                        <AuthCodeVerification email={email} dni={dni} />
                     </Stack>
                 </MainCard>
             </Fade>

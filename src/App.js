@@ -43,8 +43,8 @@ const App = () => {
               <>
                 <Notistack>
                   <Routes />
-                  {/* <Customization /> */}
                   <Snackbar />
+                  {/* <Customization /> */}
                 </Notistack>
               </>
             </AuthProvider>

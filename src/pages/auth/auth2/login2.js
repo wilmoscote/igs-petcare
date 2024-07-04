@@ -20,14 +20,14 @@ import imgGoogle from 'assets/images/auth/google.svg';
 // ================================|| LOGIN ||================================ //
 
 const Login2 = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, createOtp } = useAuth();
 
   return (
     <AuthWrapper2>
       <Grid container spacing={3}>
         <Grid item xs={12} sx={{ textAlign: 'center' }}>
           {/* <Logo /> */}
-          <img src={IgsLogo} alt="IGS Logo" width={60} style={{marginBottom: "-10px"}}/>
+          <img src={IgsLogo} alt="IGS Logo" width={60} style={{ marginBottom: "-10px" }} />
         </Grid>
         <Grid item xs={12}>
           <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>

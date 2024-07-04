@@ -12,6 +12,7 @@ import authReducer from 'store/reducers/auth';
 // project-imports
 import Loader from 'components/Loader';
 import axios from 'utils/axios';
+import { useAuthStore } from 'store/useAuthStore';
 
 const chance = new Chance();
 
@@ -83,19 +84,19 @@ export const JWTProvider = ({ children }) => {
     init();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (user, token) => {
     // const response = await axios.post('/api/account/login', { email, password });
-    const user = {
-      email: email,
-      identification: password
+    const userData = {
+      ...user,
+      token: token
     }
     // const { serviceToken, user } = response.data;
-    setSession(email);
+    setSession(userData);
     dispatch({
       type: LOGIN,
       payload: {
         isLoggedIn: true,
-        user
+        userData
       }
     });
   };
@@ -133,15 +134,123 @@ export const JWTProvider = ({ children }) => {
     dispatch({ type: LOGOUT });
   };
 
-  const resetPassword = async () => {};
+  const resetPassword = async () => { };
 
-  const updateProfile = () => {};
+  const updateProfile = () => { };
 
   if (state.isInitialized !== undefined && !state.isInitialized) {
     return <Loader />;
   }
 
-  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile }}>{children}</JWTContext.Provider>;
+  const createOtp = async (email, dni) => {
+    const currentTokens = useAuthStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    const body = {
+      email: email,
+      dni: dni
+    };
+
+    return axios.post(`/otp/create`, body, config);
+  }
+
+  const validateOtp = async (email, dni, otp) => {
+    const currentTokens = useAuthStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    const body = {
+      email: email,
+      dni: dni,
+      otp_code: otp
+    };
+
+    return axios.post(`/login`, body, config);
+  }
+
+  const getPets = async () => {
+    const currentTokens = useAuthStore.getState();
+    const { token, user } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    return axios.get(`/pet/user/list/${user?.uuid}`, config);
+  }
+
+  const getSpecies = async () => {
+    const currentTokens = useAuthStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    return axios.get(`/pet/specie/list`, config);
+  }
+
+  const createPet = async (data) => {
+    const currentTokens = useAuthStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    return axios.post(`/pet/create`, data, config);
+  }
+
+  const editPet = async (data, uuid) => {
+    const currentTokens = useAuthStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    return axios.post(`/pet/update/${uuid}`, data, config);
+  }
+
+  const deletePet = async (uuid) => {
+    const currentTokens = useAuthStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    return axios.delete(`/pet/delete/${uuid}`, config);
+  }
+
+  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile, createOtp, validateOtp, getPets, getSpecies, createPet, deletePet, editPet }}>{children}</JWTContext.Provider>;
 };
 
 JWTProvider.propTypes = {

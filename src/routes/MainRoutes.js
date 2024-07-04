@@ -6,6 +6,8 @@ import CommonLayout from 'layout/CommonLayout';
 import Loadable from 'components/Loadable';
 import AuthGuard from 'utils/route-guard/AuthGuard';
 import Login from 'pages/auth/auth1/login';
+import ServiceDetail from 'pages/services/ServiceDetail';
+import SuccessSchedule from 'pages/services/SuccessSchedule';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
@@ -129,6 +131,7 @@ const PricingPage2 = Loadable(lazy(() => import('pages/extra-pages/price/price2'
 
 
 const ServicesList = Loadable(lazy(() => import('pages/services/ServicesList')));
+const Agenda = Loadable(lazy(() => import('pages/apps/calendar')));
 // ==============================|| MAIN ROUTES ||============================== //
 
 const MainRoutes = {
@@ -167,6 +170,14 @@ const MainRoutes = {
               path: '',
               element: <ServicesList />
             },
+            {
+              path: 'detail/:serviceId',
+              element: <ServiceDetail />
+            },
+            {
+              path: 'success-schedule',
+              element: <SuccessSchedule />
+            },
           ]
         },
         {
@@ -175,6 +186,10 @@ const MainRoutes = {
             {
               path: 'login',
               element: <Login />
+            },
+            {
+              path: 'agenda',
+              element: <Agenda />
             },
           ]
         },
