@@ -250,7 +250,21 @@ export const JWTProvider = ({ children }) => {
     return axios.delete(`/pet/delete/${uuid}`, config);
   }
 
-  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile, createOtp, validateOtp, getPets, getSpecies, createPet, deletePet, editPet }}>{children}</JWTContext.Provider>;
+  const getClinics = async () => {
+    const currentTokens = useAuthStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    return axios.get(`/clinic/list`, config);
+  }
+
+  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile, createOtp, validateOtp, getPets, getSpecies, createPet, deletePet, editPet, getClinics }}>{children}</JWTContext.Provider>;
 };
 
 JWTProvider.propTypes = {

@@ -75,7 +75,7 @@ const AuthLogin = ({ forgot }) => {
             setEmail(values.email)
             setDni(values.identification)
             const response = await createOtp(values.email, values.identification)
-            console.log(response.data)
+            // console.log(response.data)
             if (response.data.success) {
               setOpen(true);
               dispatch(
@@ -107,9 +107,7 @@ const AuthLogin = ({ forgot }) => {
             }
           } catch (error) {
             console.error(error)
-          } finally {
-
-          }
+          } 
 
           // try {
           //   setOpen(true)

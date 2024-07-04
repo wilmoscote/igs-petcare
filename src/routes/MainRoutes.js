@@ -180,19 +180,19 @@ const MainRoutes = {
             },
           ]
         },
-        {
-          path: 'clinic',
-          children: [
-            {
-              path: 'login',
-              element: <Login />
-            },
-            {
-              path: 'agenda',
-              element: <Agenda />
-            },
-          ]
-        },
+        // {
+        //   path: 'clinic',
+        //   children: [
+        //     {
+        //       path: 'login',
+        //       element: <Login />
+        //     },
+        //     {
+        //       path: 'agenda',
+        //       element: <Agenda />
+        //     },
+        //   ]
+        // },
         {
           path: 'widget',
           children: [

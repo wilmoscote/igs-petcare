@@ -18,7 +18,7 @@ export default function ThemeRoutes() {
   return useRoutes([
     MainRoutes,
     LoginRoutes,
-    // ClinicRoutes,
+    ClinicRoutes,
     ComponentsRoutes,
   ]);
 }

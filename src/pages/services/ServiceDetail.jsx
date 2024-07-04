@@ -44,7 +44,8 @@ const ServiceDetail = () => {
     const { serviceId } = useParams();
     const { user } = useAuthStore();
     const [pets, setPets] = useState(null);
-    const { getPets } = useAuth();
+    const [clinics, setClinics] = useState(null)
+    const { getPets, getClinics } = useAuth();
     const { selectedPet: selectedPetStore } = usePetStore();
     const [service, setService] = useState(null);
     const [selectedPet, setSelectedPet] = useState('');
@@ -85,8 +86,26 @@ const ServiceDetail = () => {
         }
     }
 
+    const fetchClinics = async () => {
+        try {
+            //   setLoading(true)
+            const response = await getClinics();
+            console.log(response.data)
+            if (response.data?.success) {
+                setClinics(response.data?.data)
+            } else {
+                console.error(response.data.message)
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            //   setLoading(false)
+        }
+    }
+
     useEffect(() => {
         getMyPets()
+        fetchClinics()
     }, [])
 
     useEffect(() => {
@@ -181,9 +200,22 @@ const ServiceDetail = () => {
                                     <MenuItem disabled value="" sx={{ color: 'text.secondary' }}>
                                         Seleccionar Clínica
                                     </MenuItem>
-                                    {mockClinicsData.map((clinic) => (
+                                    {clinics?.map((clinic) => (
+                                        // <MenuItem key={clinic.id} value={clinic.id}>
+                                        //     {clinic.name}
+                                        // </MenuItem>
+
                                         <MenuItem key={clinic.id} value={clinic.id}>
-                                            {clinic.name}
+                                            <Stack direction="row" alignItems="center" spacing={2}>
+                                                <Avatar src={clinic.logo || ""} alt={clinic.name} />
+                                                <Box>
+                                                    <Typography variant="subtitle1" >{clinic.name}  </Typography>
+                                                    <Typography variant="body2" color="secondary">{clinic.address || ""}</Typography>
+                                                    {/* <Typography variant="body2" color="text.secondary">
+            {formatAge(pet.birthday_date) || ""}
+        </Typography> */}
+                                                </Box>
+                                            </Stack>
                                         </MenuItem>
                                     ))}
                                 </Select>
