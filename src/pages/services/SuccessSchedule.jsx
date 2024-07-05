@@ -1,7 +1,7 @@
 import React from 'react'
 import { Grid, Box, Typography, Button, Avatar, useTheme } from '@mui/material';
 import { ArrowRight, TickCircle } from 'iconsax-react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import successDog1 from 'assets/images/success/success-dog-1.webp'
 import successDog2 from 'assets/images/success/success-dog-2.webp'
 import successDog3 from 'assets/images/success/success-dog-3.webp'
@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 const SuccessSchedule = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-
+  const { bookingId } = useParams();
   const [randomImage, setRandomImage] = useState(null);
 
   useEffect(() => {
@@ -20,6 +20,10 @@ const SuccessSchedule = () => {
     const randomIndex = Math.floor(Math.random() * images.length);
     setRandomImage(images[randomIndex]);
   }, []);
+
+  if(!bookingId){
+    return <Navigate to="/dashboard" />
+  }
 
   return (
     <Box

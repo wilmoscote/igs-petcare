@@ -8,6 +8,7 @@ import AuthGuard from 'utils/route-guard/AuthGuard';
 import Login from 'pages/auth/auth1/login';
 import ServiceDetail from 'pages/services/ServiceDetail';
 import SuccessSchedule from 'pages/services/SuccessSchedule';
+import BookingList from 'pages/historial/BookingList';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
@@ -140,9 +141,9 @@ const MainRoutes = {
     {
       path: '/',
       element: (
-        // <AuthGuard>
+        <AuthGuard>
           <MainLayout />
-        // </AuthGuard>
+        </AuthGuard>
       ),
       children: [
         {
@@ -177,6 +178,19 @@ const MainRoutes = {
             {
               path: 'success-schedule',
               element: <SuccessSchedule />
+            },
+            {
+              path: 'success-schedule/:bookingId',
+              element: <SuccessSchedule />
+            },
+          ]
+        },
+        {
+          path: 'history',
+          children: [
+            {
+              path: '',
+              element: <BookingList />
             },
           ]
         },

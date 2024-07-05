@@ -45,7 +45,7 @@ const applications = {
     },
     {
       id: 'history',
-      title: <FormattedMessage id="history" />,
+      title: <FormattedMessage id="my-reservations" />,
       type: 'item',
       url: '/history',
       icon: icons.history,

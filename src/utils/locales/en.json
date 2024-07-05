@@ -142,5 +142,6 @@
   "my-pets": "My pets",
   "add-pet": "Add pet",
   "no-pets": "You dont have any pets",
-  "no-pets-desc": "Please add a pet to your profile to receive our veterinary services."
+  "no-pets-desc": "Please add a pet to your profile to receive our veterinary services.",
+  "my-reservations": "My Reservations"
 }

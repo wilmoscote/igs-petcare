@@ -1,19 +1,47 @@
 import React, { useState } from 'react';
-import { Grid, Card, CardContent, Typography, TextField, Box, Button, useTheme, OutlinedInput, InputAdornment } from '@mui/material';
+import { Grid, Card, CardContent, Typography, TextField, Box, Button, useTheme, OutlinedInput, InputAdornment, CircularProgress } from '@mui/material';
 import { Health, Briefcase, Worm, ShieldTick, Microchip, Scissors, Scissor, SearchNormal1 } from 'iconsax-react';
 import MainCard from 'components/MainCard';
 import { FormattedMessage } from 'react-intl';
 import { mockServicesData } from 'utils/mockData';
 import { useNavigate } from 'react-router';
+import useAuth from 'hooks/useAuth';
+import { useEffect } from 'react';
+import usePetStore from 'store/usePetStore';
 
 const ServicesList = () => {
     const theme = useTheme();
+    const { setSelectedService } = usePetStore();
+    const { getServices } = useAuth();
+    const [services, setServices] = useState(null);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
 
-    const filteredServices = mockServicesData.filter(service =>
+    const filteredServices = services?.filter(service =>
         service.name.toLowerCase().includes(search.toLowerCase())
     );
+
+    const fetchServices = async () => {
+        try {
+            setLoading(true)
+            const response = await getServices();
+            // console.log(response.data)
+            if (response.data?.success) {
+                setServices(response.data?.data)
+            } else {
+                console.error(response.data.message)
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchServices()
+    }, [])
 
     return (
         <Box >
@@ -34,32 +62,42 @@ const ServicesList = () => {
                 }}
             />
             <Grid container spacing={2}>
-                {filteredServices.map(service => (
-                    <Grid item xs={12} sm={6} md={4} key={service.id}>
-                        <MainCard sx={{
-                            cursor: 'pointer',
-                            transition: 'border-color 200ms',
-                            '&:hover': {
-                                borderColor: theme.palette.primary.main
-                            },
-                            '& .MuiCardContent-root': {
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: "center"
-                            }
-                        }}
-                            onClick={(e) => {
-                                navigate(`/services/detail/${service.id}`)
-                            }}
-                        >
-                            <span style={{ color: theme.palette.primary.main }}>{service.icon}</span>
-                            <Typography variant="h6" align="center" sx={{ ml: 2, fontWeight: "500" }}>
-                                {service.name}
-                            </Typography>
-                        </MainCard>
-                    </Grid>
-                ))}
-                {filteredServices.length === 0 && (
+                {loading ? (
+                    <Box sx={{ display: "flex", flexDirection: "column", py: 10, width: "100%", justifyContent: "center", alignItems: "center" }}>
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <>
+                        {filteredServices?.map(service => (
+                            <Grid item xs={12} sm={6} md={4} key={service.id}>
+                                <MainCard sx={{
+                                    cursor: 'pointer',
+                                    transition: 'border-color 200ms',
+                                    '&:hover': {
+                                        borderColor: theme.palette.primary.main
+                                    },
+                                    '& .MuiCardContent-root': {
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: "center"
+                                    }
+                                }}
+                                    onClick={(e) => {
+                                        setSelectedService(service)
+                                        navigate(`/services/detail/${service.id}`)
+                                    }}
+                                >
+                                    <span style={{ color: theme.palette.primary.main }}>{service.img || <Briefcase size="32" variant="Bulk" />} </span>
+                                    <Typography variant="h6" align="left" sx={{ ml: 2, fontWeight: "500" }}>
+                                        {service.name}
+                                    </Typography>
+                                </MainCard>
+                            </Grid>
+                        ))}
+                    </>
+                )}
+
+                {filteredServices?.length === 0 && (
                     <Grid item xs={12}>
                         <Card
                             elevation={0}

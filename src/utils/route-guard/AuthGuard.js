@@ -4,11 +4,16 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 // project-imports
 import useAuth from 'hooks/useAuth';
+import { useAuthStore } from 'store/useAuthStore';
 
 // ==============================|| AUTH GUARD ||============================== //
 
 const AuthGuard = ({ children }) => {
-  const { isLoggedIn } = useAuth();
+  const { user } = useAuthStore();
+  const isLoggedIn = Boolean(user)
+  console.log(user)
+  console.log(isLoggedIn)
+  // const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 

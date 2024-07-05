@@ -264,7 +264,49 @@ export const JWTProvider = ({ children }) => {
     return axios.get(`/clinic/list`, config);
   }
 
-  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile, createOtp, validateOtp, getPets, getSpecies, createPet, deletePet, editPet, getClinics }}>{children}</JWTContext.Provider>;
+  const getServices = async () => {
+    const currentTokens = useAuthStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    return axios.get(`/services/list`, config);
+  }
+
+  const createSchedule = async (data) => {
+    const currentTokens = useAuthStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    return axios.post(`/clinic/booking/create`, data, config);
+  }
+
+  const getBookingList = async (status = "active", pagination = "10") => {
+    const currentTokens = useAuthStore.getState();
+    const { token, user } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    return axios.get(`/clinic/booking/user/list/${user?.uuid}?status=${status}&pagination=${pagination}`, config);
+  }
+
+  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile, createOtp, validateOtp, getPets, getSpecies, createPet, deletePet, editPet, getClinics, getServices, createSchedule, getBookingList }}>{children}</JWTContext.Provider>;
 };
 
 JWTProvider.propTypes = {
