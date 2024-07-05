@@ -6,7 +6,6 @@ import successDog1 from 'assets/images/success/success-dog-1.webp'
 import successDog2 from 'assets/images/success/success-dog-2.webp'
 import successDog3 from 'assets/images/success/success-dog-3.webp'
 import successDog4 from 'assets/images/success/success-dog-4.webp'
-import successDog5 from 'assets/images/success/success-dog-5.webp'
 import { useState } from 'react';
 import { useEffect } from 'react';
 
@@ -17,7 +16,7 @@ const SuccessSchedule = () => {
   const [randomImage, setRandomImage] = useState(null);
 
   useEffect(() => {
-    const images = [successDog1, successDog2, successDog3, successDog4, successDog5];
+    const images = [successDog1, successDog2, successDog3, successDog4];
     const randomIndex = Math.floor(Math.random() * images.length);
     setRandomImage(images[randomIndex]);
   }, []);
@@ -78,7 +77,7 @@ const SuccessSchedule = () => {
             <img
               src={randomImage}
               alt="Happy Puppy"
-              style={{ maxWidth: '100%', borderRadius: '8px' }}
+              style={{ maxWidth: '100%', maxHeight: "400px", borderRadius: '8px' }}
             />
           </Box>
         </Grid>
