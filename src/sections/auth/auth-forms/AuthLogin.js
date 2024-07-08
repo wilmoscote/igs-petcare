@@ -108,7 +108,7 @@ const AuthLogin = ({ forgot }) => {
           } catch (error) {
             console.error(error)
           } finally {
-
+            console.log('error')
           }
 
           // try {

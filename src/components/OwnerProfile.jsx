@@ -51,34 +51,34 @@ import { useAuthStore } from 'store/useAuthStore';
 const avatarImage = require.context('assets/images/users', true);
 
 // constant
-const getInitialValues = (customer) => {
-    const newCustomer = {
-        name: '',
-        email: '',
-        location: '',
-        orderStatus: ''
-    };
+// const getInitialValues = (customer) => {
+//     const newCustomer = {
+//         name: '',
+//         email: '',
+//         location: '',
+//         orderStatus: ''
+//     };
 
-    if (customer) {
-        newCustomer.name = customer.fatherName;
-        newCustomer.location = customer.address;
-        return _.merge({}, newCustomer, customer);
-    }
+//     if (customer) {
+//         newCustomer.name = customer.fatherName;
+//         newCustomer.location = customer.address;
+//         return _.merge({}, newCustomer, customer);
+//     }
 
-    return newCustomer;
-};
+//     return newCustomer;
+// };
 
-const allStatus = ['Complicated', 'Single', 'Relationship'];
+// const allStatus = ['Complicated', 'Single', 'Relationship'];
 
-const PetProfile = ({ pet, onCancel }) => {
+const OwnerProfile = ({ owner , onCancel }) => {
     const { user } = useAuthStore();
-    const { getSpecies, createPet, editPet } = useAuth();
+    // const { getSpecies, createPet, editPet } = useAuth();
     const theme = useTheme();
-    const isCreating = !pet;
-    const [species, setSpecies] = useState(null);
-    const [breeds, setBreeds] = useState([]);
-    const [selectedImage, setSelectedImage] = useState(undefined);
-    const [avatar, setAvatar] = useState(pet?.img_profile ? pet?.img_profile : null);
+    // const isCreating = !pet;
+    // const [species, setSpecies] = useState(null);
+    // const [breeds, setBreeds] = useState([]);
+    // const [selectedImage, setSelectedImage] = useState(undefined);
+    // const [avatar, setAvatar] = useState(pet?.img_profile ? pet?.img_profile : null);
 
     // const fetchSpecies = async () => {
     //     try {
@@ -101,26 +101,26 @@ const PetProfile = ({ pet, onCancel }) => {
     //     fetchSpecies();
     // }, []);
 
-    useEffect(() => {
-        if (selectedImage) {
-            setAvatar(URL.createObjectURL(selectedImage));
-        }
-    }, [selectedImage]);
+    // useEffect(() => {
+    //     if (selectedImage) {
+    //         setAvatar(URL.createObjectURL(selectedImage));
+    //     }
+    // }, [selectedImage]);
 
-    const PetSchema = Yup.object().shape({
-        name: Yup.string().max(255).required('El nombre es obligatorio'),
-        species: Yup.string().required('La especie es obligatoria'),
-        breed: Yup.string().when('species', {
-            is: (value) => {
-                const selectedSpecies = species?.find(specie => specie.id === value);
-                return selectedSpecies?.breeds?.length > 0;
-            },
-            then: (schema) => schema.required('La raza es obligatoria'),
-            otherwise: (schema) => schema.notRequired()
-        }),
-        sex: Yup.string().required('El sexo es obligatorio'),
-        dateOfBirth: Yup.string().required('La fecha de nacimiento es obligatoria')
-    });
+    // const PetSchema = Yup.object().shape({
+    //     name: Yup.string().max(255).required('El nombre es obligatorio'),
+    //     species: Yup.string().required('La especie es obligatoria'),
+    //     breed: Yup.string().when('species', {
+    //         is: (value) => {
+    //             const selectedSpecies = species?.find(specie => specie.id === value);
+    //             return selectedSpecies?.breeds?.length > 0;
+    //         },
+    //         then: (schema) => schema.required('La raza es obligatoria'),
+    //         otherwise: (schema) => schema.notRequired()
+    //     }),
+    //     sex: Yup.string().required('El sexo es obligatorio'),
+    //     dateOfBirth: Yup.string().required('La fecha de nacimiento es obligatoria')
+    // });
 
     const [openAlert, setOpenAlert] = useState(false);
 
@@ -131,13 +131,13 @@ const PetProfile = ({ pet, onCancel }) => {
 
     const formik = useFormik({
         initialValues: {
-            name: pet?.name || '',
-            species: pet?.specie_id || '',
-            breed: pet?.breed_id || '',
-            sex: pet?.gender || '',
-            dateOfBirth: pet?.birthday_date || ''
+            name: owner?.name || '',
+            species: owner?.specie_id || '',
+            breed: owner?.breed_id || '',
+            sex: owner?.gender || '',
+            dateOfBirth: owner?.birthday_date || ''
         },
-        validationSchema: PetSchema,
+        // validationSchema: PetSchema,
         onSubmit: async (values, { setSubmitting }) => {
 
             if (isCreating) {
@@ -266,28 +266,28 @@ const PetProfile = ({ pet, onCancel }) => {
         }
     });
 
-    const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue } = formik;
+    // const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue } = formik;
 
-    const handleSpeciesChange = (event) => {
-        const speciesId = event.target.value;
-        const selectedSpecies = species.find((specie) => specie.id === speciesId);
-        setFieldValue('species', speciesId);
-        setBreeds(selectedSpecies?.breeds || []);
-        setFieldValue('breed', '');
-    };
+    // const handleSpeciesChange = (event) => {
+    //     const speciesId = event.target.value;
+    //     const selectedSpecies = species.find((specie) => specie.id === speciesId);
+    //     setFieldValue('species', speciesId);
+    //     setBreeds(selectedSpecies?.breeds || []);
+    //     setFieldValue('breed', '');
+    // };
 
     return (
         <>
             <FormikProvider value={formik}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-                        <DialogTitle>{pet ? 'Datos Mascota' : 'Nueva Mascota'}</DialogTitle>
+                    <form autoComplete="off" noValidate>
+                        <DialogTitle>{owner ? 'Datos Propietario' : 'Nueva Mascota'}</DialogTitle>
                         <Divider />
                         <DialogContent sx={{ p: 2.5 }}>
                             <Grid container spacing={3}>
                                 <Grid item xs={12} md={3}>
                                     <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
-                                        <FormLabel
+                                        {/* <FormLabel
                                             htmlFor="change-avtar"
                                             sx={{
                                                 position: 'relative',
@@ -301,7 +301,7 @@ const PetProfile = ({ pet, onCancel }) => {
                                                 <Avatar alt="Avatar 1" src={avatar} sx={{ width: 72, height: 72, border: '1px dashed' }} />
                                             ) : (
                                                 <Pet variant="Bold" size="72" />
-                                            )}
+                                            )} */}
                                             <Box
                                                 sx={{
                                                     position: 'absolute',
@@ -467,4 +467,4 @@ const PetProfile = ({ pet, onCancel }) => {
     );
 };
 
-export default PetProfile;
+export default OwnerProfile;
