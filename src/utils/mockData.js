@@ -86,3 +86,129 @@ export const mockPetsData = [
     avatar: catMemoji1
   }
 ];
+
+// export const petDataResponse = {
+//   "message": "List",
+//   "data": [
+//       {
+//           "id": 2,
+//           "uuid": "01907a32-290a-71d7-b58d-3a3a8334054c",
+//           "name": "V\u00e9nus",
+//           "img_profile": "https:\/\/apiveterinary.3fixesdev.com\/storage\/images\/pet\/profile\/6685bbedc80af.webp",
+//           "specie_id": 2,
+//           "breed_id": 9,
+//           "user_id": 3,
+//           "gender": "female",
+//           "birthday_date": "2018-09-11",
+//           "deleted_at": null,
+//           "created_at": "2024-07-03T20:03:46.000000Z",
+//           "updated_at": "2024-07-03T21:00:29.000000Z",
+//           "specie": {
+//               "id": 2,
+//               "name": "Perro",
+//               "uuid": "0190797f-6809-71c0-a233-70cfdec4a054",
+//               "name_alias": "perro",
+//               "deleted_at": null,
+//               "created_at": "2024-07-03T16:48:31.000000Z",
+//               "updated_at": "2024-07-03T16:48:31.000000Z"
+//           },
+//           "breed": {
+//               "id": 9,
+//               "name": "Beagle",
+//               "uuid": "0190797f-680e-70a1-a639-ba9607c61a72",
+//               "name_alias": "beagle",
+//               "specie_id": 2,
+//               "deleted_at": null,
+//               "created_at": "2024-07-03T16:48:31.000000Z",
+//               "updated_at": "2024-07-03T16:48:31.000000Z"
+//           }
+//       },
+//       {
+//           "id": 4,
+//           "uuid": "01907a66-ae00-705a-8453-4b4687f1b8e8",
+//           "name": "Ori\u00f3n",
+//           "img_profile": "https:\/\/apiveterinary.3fixesdev.com\/storage\/images\/pet\/profile\/6685bc13e99d9.jpg",
+//           "specie_id": 1,
+//           "breed_id": 4,
+//           "user_id": 3,
+//           "gender": "male",
+//           "birthday_date": "2024-04-30",
+//           "deleted_at": null,
+//           "created_at": "2024-07-03T21:01:07.000000Z",
+//           "updated_at": "2024-07-03T21:01:07.000000Z",
+//           "specie": {
+//               "id": 1,
+//               "name": "Gato",
+//               "uuid": "0190797f-6806-721d-aa99-e5b27bde3184",
+//               "name_alias": "gato",
+//               "deleted_at": null,
+//               "created_at": "2024-07-03T16:48:31.000000Z",
+//               "updated_at": "2024-07-03T16:48:31.000000Z"
+//           },
+//           "breed": {
+//               "id": 4,
+//               "name": "Com\u00fan",
+//               "uuid": "0190797f-680c-7281-a788-7da3df0ff10d",
+//               "name_alias": "com\u00fan",
+//               "specie_id": 1,
+//               "deleted_at": null,
+//               "created_at": "2024-07-03T16:48:31.000000Z",
+//               "updated_at": "2024-07-03T16:48:31.000000Z"
+//           }
+//       },
+//       {
+//           "id": 7,
+//           "uuid": "01907a72-9be2-7375-9000-6a6e04a032d5",
+//           "name": "Pedro",
+//           "img_profile": "https:\/\/apiveterinary.3fixesdev.com\/storage\/images\/pet\/profile\/6685bf21b9322.webp",
+//           "specie_id": 2,
+//           "breed_id": 7,
+//           "user_id": 3,
+//           "gender": "male",
+//           "birthday_date": "2024-05-01",
+//           "deleted_at": null,
+//           "created_at": "2024-07-03T21:14:09.000000Z",
+//           "updated_at": "2024-07-03T21:14:27.000000Z",
+//           "specie": {
+//               "id": 2,
+//               "name": "Perro",
+//               "uuid": "0190797f-6809-71c0-a233-70cfdec4a054",
+//               "name_alias": "perro",
+//               "deleted_at": null,
+//               "created_at": "2024-07-03T16:48:31.000000Z",
+//               "updated_at": "2024-07-03T16:48:31.000000Z"
+//           },
+//           "breed": {
+//               "id": 7,
+//               "name": "Bulldog franc\u00e9s",
+//               "uuid": "0190797f-680d-7389-a735-6aad5b340288",
+//               "name_alias": "bulldogfrances",
+//               "specie_id": 2,
+//               "deleted_at": null,
+//               "created_at": "2024-07-03T16:48:31.000000Z",
+//               "updated_at": "2024-07-03T16:48:31.000000Z"
+//           }
+//       }
+//   ],
+//   "success": true
+// }
+
+
+// export const ownerData = {
+//   "id": 3,
+//   "name": "Owner Test",
+//   "uuid": "0190759a-e37b-7262-99f4-3cbd5789",
+//   "email": "owner@test.com",
+//   "email_verified_at": null,
+//   "status": "ACTIVE",
+//   "dni": "987654321",
+//   "otp_code": null,
+//   "phone": "3214569874",
+//   "address": "Calle 3 No 3-33",
+//   "user_type_id": 1,
+//   "deleted_at": null,
+//   "created_at": "2024-07-02T22:40:03.000000Z",
+//   "updated_at": "2024-07-08T17:20:11.000000Z",
+//   "rol": [],
+//   "roles": []
+// }

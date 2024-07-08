@@ -30,15 +30,19 @@ import AnimateButton from 'components/@extended/AnimateButton';
 // assets
 import { Eye, EyeSlash } from 'iconsax-react';
 import AuthCodeModal from 'components/AuthCodeModal';
+import { dispatch, useSelector } from 'store';
+import { openSnackbar } from 'store/reducers/snackbar';
 
 // ============================|| JWT - LOGIN ||============================ //
 
 const AuthLogin = ({ forgot }) => {
   const [checked, setChecked] = useState(false);
-  const [email, setEmail] = useState("")
-  const { isLoggedIn, login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [dni, setDni] = useState("")
+  const { createOtp, login } = useAuth();
   const scriptedRef = useScriptRef();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -66,21 +70,62 @@ const AuthLogin = ({ forgot }) => {
           identification: Yup.string().min(5).required('Ingrese un número de identificación'),
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+          setError(null)
           try {
-            setOpen(true)
-            await login(values.email, values.identification);
-            if (scriptedRef.current) {
-              setStatus({ success: true });
-              setSubmitting(false);
+            setEmail(values.email)
+            setDni(values.identification)
+            const response = await createOtp(values.email, values.identification)
+            console.log(response.data)
+            if (response.data.success) {
+              setOpen(true);
+              dispatch(
+                openSnackbar({
+                  open: true,
+                  message: response.data.message,
+                  variant: 'success',
+                  alert: {
+                    color: 'success'
+                  },
+                  close: true
+                })
+              );
+              // alert(response.data.message)
+            } else {
+              dispatch(
+                openSnackbar({
+                  open: true,
+                  message: response.data.message,
+                  variant: 'error',
+                  alert: {
+                    color: 'error'
+                  },
+                  close: true
+                })
+              );
+              setError(response.data.message)
+              // alert(response.data.message)
             }
-          } catch (err) {
-            console.error(err);
-            if (scriptedRef.current) {
-              setStatus({ success: false });
-              setErrors({ submit: err.message });
-              setSubmitting(false);
-            }
+          } catch (error) {
+            console.error(error)
+          } finally {
+
           }
+
+          // try {
+          //   setOpen(true)
+          //   await login(values.email, values.identification);
+          //   if (scriptedRef.current) {
+          //     setStatus({ success: true });
+          //     setSubmitting(false);
+          //   }
+          // } catch (err) {
+          //   console.error(err);
+          //   if (scriptedRef.current) {
+          //     setStatus({ success: false });
+          //     setErrors({ submit: err.message });
+          //     setSubmitting(false);
+          //   }
+          // }
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
@@ -109,7 +154,7 @@ const AuthLogin = ({ forgot }) => {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="email-login">Contraseña</InputLabel>
+                  <InputLabel htmlFor="email-login">Identificación</InputLabel>
                   <OutlinedInput
                     id="identification-login"
                     type="identification"
@@ -128,64 +173,14 @@ const AuthLogin = ({ forgot }) => {
                   )}
                 </Stack>
               </Grid>
-              {/* <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="password-login">Password</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.password && errors.password)}
-                    id="-password-login"
-                    type={showPassword ? 'text' : 'password'}
-                    value={values.password}
-                    name="password"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                          color="secondary"
-                        >
-                          {showPassword ? <Eye /> : <EyeSlash />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    placeholder="Enter password"
-                  />
-                  {touched.password && errors.password && (
-                    <FormHelperText error id="standard-weight-helper-text-password-login">
-                      {errors.password}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid> */}
-
-              {/* <Grid item xs={12} sx={{ mt: -1 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={checked}
-                        onChange={(event) => setChecked(event.target.checked)}
-                        name="checked"
-                        color="primary"
-                        size="small"
-                      />
-                    }
-                    label={<Typography variant="h6">Keep me sign in</Typography>}
-                  />
-
-                  <Link variant="h6" component={RouterLink} to={isLoggedIn && forgot ? forgot : '/forgot-password'} color="text.primary">
-                    Forgot Password?
-                  </Link>
-                </Stack>
-              </Grid> */}
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
+                </Grid>
+              )}
+              {error && (
+                <Grid item xs={12}>
+                  <FormHelperText error>{error}</FormHelperText>
                 </Grid>
               )}
               <Grid item xs={12}>
@@ -199,7 +194,7 @@ const AuthLogin = ({ forgot }) => {
           </form>
         )}
       </Formik>
-      <AuthCodeModal open={open} handleClose={handleClose} email={email} />
+      <AuthCodeModal open={open} handleClose={handleClose} email={email} dni={dni} />
     </>
   );
 };
