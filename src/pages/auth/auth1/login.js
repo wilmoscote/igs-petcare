@@ -17,6 +17,7 @@ import imgFacebook from 'assets/images/auth/facebook.svg';
 import imgTwitter from 'assets/images/auth/twitter.svg';
 import imgGoogle from 'assets/images/auth/google.svg';
 import PetProfile from 'components/PetProfile';
+import OwnerProfile from 'components/OwnerProfile'
 import { useState } from 'react';
 import { PopupTransition } from 'components/@extended/Transitions';
 
@@ -34,7 +35,7 @@ const Login = () => {
     "specie_id": 2,
     "breed_id": 9,
     "user_id": 3,
-    "gender": "female",
+    "gender": "Hembra",
     "birthday_date": "2018-09-11",
     "deleted_at": null,
     "created_at": "2024-07-03T20:03:46.000000Z",
@@ -60,7 +61,29 @@ const Login = () => {
     }
   })
 
+  const ownerData =  JSON.stringify(
+    {
+      "id": 3,
+       "name": "Owner Test",
+       "uuid": "0190759a-e37b-7262-99f4-3cbd5789",
+      "email": "owner@test.com",
+       "email_verified_at": null,
+       "status": "ACTIVE",
+      "dni": "987654321",
+       "otp_code": null,
+      "phone": "3214569874",
+       "address": "Calle 3 No 3-33",
+      "user_type_id": 1,
+      "deleted_at": null,
+      "created_at": "2024-07-02T22:40:03.000000Z",
+      "updated_at": "2024-07-08T17:20:11.000000Z",
+      "rol": [],
+      "roles": []
+     }
+  )
+
   const [pet, setPet] = useState(JSON.parse(data));
+  const [owner, setOwner] = useState (JSON.parse(ownerData))
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -123,6 +146,7 @@ const Login = () => {
         sx={{ '& .MuiDialog-paper': { p: 0 } }}
       >
         <PetProfile pet={pet} onCancel={handleClose} />
+        <OwnerProfile owner={owner} onCancel={handleClose}></OwnerProfile>
       </Dialog>
     </AuthWrapper>
   );
