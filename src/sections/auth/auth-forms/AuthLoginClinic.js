@@ -38,7 +38,7 @@ const AuthLogin = ({ forgot }) => {
   const [email, setEmail] = useState("")
   const { isLoggedIn, login } = useAuth();
   const scriptedRef = useScriptRef();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleOpen = () => setOpen(true);

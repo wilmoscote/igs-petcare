@@ -9,7 +9,8 @@ import useAuth from 'hooks/useAuth';
 import AuthSocButton from 'sections/auth/AuthSocButton';
 import AuthDivider from 'sections/auth/AuthDivider';
 import AuthWrapper from 'sections/auth/AuthWrapper';
-import AuthLogin from 'sections/auth/auth-forms/AuthLogin';
+import AuthLoginClinic from 'sections/auth/auth-forms/AuthLoginClinic';
+import IgsLogo from 'assets/images/auth/igsLogo.svg';
 
 // assets
 import imgFacebook from 'assets/images/auth/facebook.svg';
@@ -25,9 +26,9 @@ const Login = () => {
     <AuthWrapper>
       <Grid container spacing={3}>
         <Grid item xs={12} sx={{ textAlign: 'center' }}>
-          <Logo />
+        <img src={IgsLogo} alt="IGS Logo" width={60} style={{ marginBottom: "-10px" }} />
         </Grid>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <AuthSocButton>
@@ -45,16 +46,16 @@ const Login = () => {
               </AuthSocButton>
             </Grid>
           </Grid>
-        </Grid>
-        <Grid item xs={12}>
+        </Grid> */}
+        {/* <Grid item xs={12}>
           <AuthDivider>
             <Typography variant="body1">OR</Typography>
           </AuthDivider>
-        </Grid>
+        </Grid> */}
         <Grid item xs={12}>
           <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
             <Typography variant="h3">Login</Typography>
-            <Typography
+            {/* <Typography
               component={Link}
               to={isLoggedIn ? '/auth/register' : '/register'}
               variant="body1"
@@ -62,11 +63,11 @@ const Login = () => {
               color="primary"
             >
               Don&apos;t have an account?
-            </Typography>
+            </Typography> */}
           </Stack>
         </Grid>
         <Grid item xs={12}>
-          <AuthLogin forgot="/auth/forgot-password" />
+          <AuthLoginClinic forgot="/auth/forgot-password" />
         </Grid>
       </Grid>
     </AuthWrapper>
@@ -74,3 +75,4 @@ const Login = () => {
 };
 
 export default Login;
+
