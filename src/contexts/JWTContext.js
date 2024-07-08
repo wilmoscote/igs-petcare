@@ -27,12 +27,12 @@ const verifyToken = (serviceToken) => {
   if (!serviceToken) {
     return false;
   }
-  const decoded = jwtDecode(serviceToken);
-
-  /**
-   * Property 'exp' does not exist on type '<T = unknown>(token: string, options?: JwtDecodeOptions | undefined) => T'.
-   */
-  return decoded.exp > Date.now() / 1000;
+  try {
+    const decoded = jwtDecode(serviceToken);
+    return decoded.exp > Date.now() / 1000;
+  } catch (err) {
+    return false
+  }
 };
 
 const setSession = (serviceToken) => {

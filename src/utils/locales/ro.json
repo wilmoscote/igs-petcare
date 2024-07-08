@@ -143,5 +143,7 @@
   "add-pet": "Agregar mascota",
   "no-pets": " No tienes mascotas",
   "no-pets-desc": "Por favor agrega una mascota a tu perfil para recibir nuestros servicios veterinarios.",
-  "my-reservations": "Mis Reservas"
+  "my-reservations": "Mis Reservas",
+  "menu": "MENÚ",
+  "schedule": "Agenda"
 }

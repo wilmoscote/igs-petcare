@@ -11,8 +11,8 @@ import { useAuthStore } from 'store/useAuthStore';
 const AuthGuard = ({ children }) => {
   const { user } = useAuthStore();
   const isLoggedIn = Boolean(user)
-  console.log(user)
-  console.log(isLoggedIn)
+  // console.log(user)
+  // console.log(isLoggedIn)
   // const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

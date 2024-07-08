@@ -1,14 +1,16 @@
 import { lazy } from 'react';
 
 // project-imports
-import MainLayout from 'layout/MainLayout';
-import CommonLayout from 'layout/CommonLayout';
+import ClinicLayout from 'layout/ClinicLayout';
 import Loadable from 'components/Loadable';
 import Login from 'pages/auth/auth1/login';
 import { element } from 'prop-types';
+import ClinicAuthGuard from 'utils/route-guard/ClinicAuthGuard';
 
 
 const Agenda = Loadable(lazy(() => import('pages/apps/calendar')));
+
+const ClinicDashboard = Loadable(lazy(() => import('pages/clinic/ClinicDashboard')));
 // ==============================|| MAIN ROUTES ||============================== //
 
 const ClinicRoutes = {
@@ -23,8 +25,22 @@ const ClinicRoutes = {
       element: <Login />
     },
     {
-      path: 'agenda',
-      element: <Agenda />
+      element: (
+        // <ClinicAuthGuard>
+        <ClinicLayout />
+        // </ClinicAuthGuard>
+      ),
+      path: 'dashboard',
+      children: [
+        {
+          path: 'agenda',
+          element: <Agenda />
+        },
+        {
+          path: 'home',
+          element: <ClinicDashboard />
+        },
+      ]
     },
   ]
 };

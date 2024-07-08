@@ -19,6 +19,7 @@ const BookingList = () => {
         setLoading(true);
         try {
             const response = await getBookingList(status);
+            console.log(response.data.data.data)
             if (response.data.success) {
                 setBookings(response.data.data.data);
             }
