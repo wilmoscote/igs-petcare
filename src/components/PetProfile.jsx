@@ -24,7 +24,8 @@ import {
     Switch,
     TextField,
     Tooltip,
-    Typography
+    Typography,
+    CircularProgress
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -43,10 +44,14 @@ import { openSnackbar } from 'store/reducers/snackbar';
 import { ThemeMode } from 'config';
 
 // assets
-import { Camera, Pet, Trash } from 'iconsax-react';
+import { ArrowLeft, ArrowRight, Camera, Pet, Trash } from 'iconsax-react';
 import AlertCustomerDelete from 'sections/apps/customer/AlertCustomerDelete';
 import useAuth from 'hooks/useAuth';
 import { useAuthStore } from 'store/useAuthStore';
+import { mockAppoinmentData } from 'utils/mock-data';
+import ClinicAppointmentCard from './ClinicAppointmentCard';
+import { genderName } from 'utils/petUtils';
+import PetHistoryAppointmentCard from './PetHistoryAppointmentCard';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -72,34 +77,17 @@ const allStatus = ['Complicated', 'Single', 'Relationship'];
 
 const PetProfile = ({ pet, onCancel }) => {
     const { user } = useAuthStore();
-    const { getSpecies, createPet, editPet } = useAuth();
+    const { getPetBookingList } = useAuth();
     const theme = useTheme();
     const isCreating = !pet;
     const [species, setSpecies] = useState(null);
     const [breeds, setBreeds] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(undefined);
     const [avatar, setAvatar] = useState(pet?.img_profile ? pet?.img_profile : null);
-
-    // const fetchSpecies = async () => {
-    //     try {
-    //         const response = await getSpecies();
-    //         if (response.data?.success) {
-    //             setSpecies(response.data?.data);
-    //             if (pet) {
-    //                 const selectedSpecies = response.data?.data.find(specie => specie.id === pet.specie_id);
-    //                 setBreeds(selectedSpecies?.breeds || []);
-    //             }
-    //         } else {
-    //             console.error(response.data.message);
-    //         }
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     fetchSpecies();
-    // }, []);
+    const [data, setData] = useState(mockAppoinmentData)
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         if (selectedImage) {
@@ -109,25 +97,7 @@ const PetProfile = ({ pet, onCancel }) => {
 
     const PetSchema = Yup.object().shape({
         name: Yup.string().max(255).required('El nombre es obligatorio'),
-        species: Yup.string().required('La especie es obligatoria'),
-        breed: Yup.string().when('species', {
-            is: (value) => {
-                const selectedSpecies = species?.find(specie => specie.id === value);
-                return selectedSpecies?.breeds?.length > 0;
-            },
-            then: (schema) => schema.required('La raza es obligatoria'),
-            otherwise: (schema) => schema.notRequired()
-        }),
-        sex: Yup.string().required('El sexo es obligatorio'),
-        dateOfBirth: Yup.string().required('La fecha de nacimiento es obligatoria')
     });
-
-    const [openAlert, setOpenAlert] = useState(false);
-
-    const handleAlertClose = () => {
-        setOpenAlert(!openAlert);
-        onCancel();
-    };
 
     const formik = useFormik({
         initialValues: {
@@ -139,130 +109,6 @@ const PetProfile = ({ pet, onCancel }) => {
         },
         validationSchema: PetSchema,
         onSubmit: async (values, { setSubmitting }) => {
-
-            if (isCreating) {
-                try {
-                    const formData = new FormData();
-                    formData.append('user_id', user?.id);
-                    formData.append('specie_id', values.species);
-                    if (selectedImage) formData.append("img_profile", selectedImage);
-                    if (values.breed) {
-                        formData.append('breed_id', values.breed);
-                    }
-                    formData.append('gender', values.sex);
-                    formData.append('birthday_date', values.dateOfBirth);
-                    formData.append('name', values.name);
-
-                    const response = await createPet(formData);
-
-                    if (response.data.success) {
-                        dispatch(
-                            openSnackbar({
-                                open: true,
-                                message: 'Mascota añadida correctamente.',
-                                variant: 'alert',
-                                alert: {
-                                    color: 'success'
-                                },
-                                close: true
-                            })
-                        );
-                        getMyPets()
-                    } else {
-                        dispatch(
-                            openSnackbar({
-                                open: true,
-                                message: 'Error al añadir mascota.',
-                                variant: 'alert',
-                                alert: {
-                                    color: 'error'
-                                },
-                                close: true
-                            })
-                        );
-                    }
-                    setSubmitting(false);
-                    onCancel();
-                } catch (error) {
-                    console.error(error);
-                    setSubmitting(false);
-                    dispatch(
-                        openSnackbar({
-                            open: true,
-                            message: 'Error al añadir mascota.',
-                            variant: 'alert',
-                            alert: {
-                                color: 'error'
-                            },
-                            close: true
-                        })
-                    );
-                } finally {
-                    setSubmitting(false);
-                }
-            } else {
-                //EDITAR MASCOTA
-                try {
-                    const formData = new FormData();
-                    formData.append('user_id', user?.id);
-                    formData.append('specie_id', values.species);
-                    if (selectedImage) formData.append("img_profile", selectedImage);
-                    if (values.breed) {
-                        formData.append('breed_id', values.breed);
-                    }
-                    formData.append('gender', values.sex);
-                    formData.append('birthday_date', values.dateOfBirth);
-                    formData.append('name', values.name);
-
-                    const response = await editPet(formData, pet?.uuid);
-
-                    if (response.data.success) {
-                        dispatch(
-                            openSnackbar({
-                                open: true,
-                                message: 'Mascota editada correctamente.',
-                                variant: 'alert',
-                                alert: {
-                                    color: 'success'
-                                },
-                                close: true
-                            })
-                        );
-                        getMyPets()
-                    } else {
-                        dispatch(
-                            openSnackbar({
-                                open: true,
-                                message: 'Error al editar mascota.',
-                                variant: 'alert',
-                                alert: {
-                                    color: 'error'
-                                },
-                                close: true
-                            })
-                        );
-                    }
-
-                    setSubmitting(false);
-                    onCancel();
-                } catch (error) {
-                    console.error(error);
-                    setSubmitting(false);
-                    dispatch(
-                        openSnackbar({
-                            open: true,
-                            message: 'Error al añadir mascota.',
-                            variant: 'alert',
-                            alert: {
-                                color: 'error'
-                            },
-                            close: true
-                        })
-                    );
-                } finally {
-                    setSubmitting(false);
-                }
-            }
         }
     });
 
@@ -276,12 +122,44 @@ const PetProfile = ({ pet, onCancel }) => {
         setFieldValue('breed', '');
     };
 
+    const getBookingList = async () => {
+        setLoading(true);
+        try {
+            const response = await getPetBookingList(pet?.uuid, 10, currentPage);
+            console.log(response.data)
+            if (response.data.success) {
+                setData(response.data.data.data)
+                setTotalPages(response.data.data.last_page);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        getBookingList()
+    }, [currentPage])
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
     return (
         <>
             <FormikProvider value={formik}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-                        <DialogTitle>{pet ? 'Datos Mascota' : 'Nueva Mascota'}</DialogTitle>
+                        <DialogTitle>Perfil de Mascota</DialogTitle>
                         <Divider />
                         <DialogContent sx={{ p: 2.5 }}>
                             <Grid container spacing={3}>
@@ -302,142 +180,70 @@ const PetProfile = ({ pet, onCancel }) => {
                                             ) : (
                                                 <Pet variant="Bold" size="72" />
                                             )}
-                                            <Box
-                                                sx={{
-                                                    position: 'absolute',
-                                                    top: 0,
-                                                    left: 0,
-                                                    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .75)' : 'rgba(0,0,0,.65)',
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    opacity: 0,
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center'
-                                                }}
-                                            >
-                                                <Stack spacing={0.5} alignItems="center">
-                                                    <Camera style={{ color: theme.palette.secondary.light, fontSize: '2rem' }} />
-                                                    <Typography sx={{ color: 'secondary.lighter' }}>Upload</Typography>
-                                                </Stack>
-                                            </Box>
                                         </FormLabel>
-                                        <TextField
-                                            type="file"
-                                            id="change-avtar"
-                                            placeholder="Outlined"
-                                            variant="outlined"
-                                            sx={{ display: 'none' }}
-                                            onChange={(e) => setSelectedImage(e.target.files?.[0])}
-                                        />
                                     </Stack>
                                 </Grid>
                                 <Grid item xs={12} md={8}>
                                     <Grid container spacing={3}>
-                                        <Grid item xs={12}>
+                                        <Grid item xs={3}>
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-name">Nombre</InputLabel>
-                                                {/* <TextField
-                                                    fullWidth
-                                                    id="pet-name"
-                                                    placeholder="Ingrese el nombre de la mascota"
-                                                    {...getFieldProps('name')}
-                                                    error={Boolean(touched.name && errors.name)}
-                                                    helperText={touched.name && errors.name}
-                                                /> */}
-                                                <Typography>
+                                                <Typography color="black" variant="body1" sx={{ fontWeight: "500" }}>
                                                     {pet.name}
                                                 </Typography>
                                             </Stack>
                                         </Grid>
-                                        <Grid item xs={12}>
+                                        <Grid item xs={3}>
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-species">Especie</InputLabel>
-                                                <Typography>
+                                                <Typography color="black" variant="body1" sx={{ fontWeight: "500" }}>
                                                     {pet.specie.name}
                                                 </Typography>
-                                                {/* <FormControl fullWidth>
-                                                    <Select
-                                                        id="pet-species"
-                                                        displayEmpty
-                                                        {...getFieldProps('species')}
-                                                        onChange={handleSpeciesChange}
-                                                        input={<OutlinedInput id="select-pet-species" />}
-                                                        error={Boolean(touched.species && errors.species)}
-                                                    >
-                                                        <MenuItem value="" disabled><Typography variant="subtitle1">Seleccione la especie</Typography></MenuItem>
-                                                        {species && species.map((specie) => (
-                                                            <MenuItem value={specie.id} key={specie.id}>{specie.name}</MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                    {touched.species && errors.species && (
-                                                        <FormHelperText error>{errors.species}</FormHelperText>
-                                                    )}
-                                                </FormControl> */}
                                             </Stack>
                                         </Grid>
-                                        <Grid item xs={12}>
+                                        <Grid item xs={3}>
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-breed">Raza</InputLabel>
-                                                <Typography>{pet.breed.name}</Typography>
-                                                {/* <FormControl fullWidth>
-                                                    <Select
-                                                        id="pet-breed"
-                                                        displayEmpty
-                                                        {...getFieldProps('breed')}
-                                                        input={<OutlinedInput id="select-pet-breed" />}
-                                                        error={Boolean(touched.breed && errors.breed)}
-                                                    >
-                                                        <MenuItem value="" disabled><Typography variant="subtitle1">Seleccione la raza</Typography></MenuItem>
-                                                        {breeds && breeds.map((breed) => (
-                                                            <MenuItem value={breed.id} key={breed.id}>{breed.name}</MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                    {touched.breed && errors.breed && (
-                                                        <FormHelperText error>{errors.breed}</FormHelperText>
-                                                    )}
-                                                </FormControl> */}
+                                                <Typography color="black" variant="body1" sx={{ fontWeight: "500" }}>{pet.breed.name}</Typography>
                                             </Stack>
                                         </Grid>
-                                        <Grid item xs={12}>
+                                        <Grid item xs={3}>
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-sex">Género</InputLabel>
-                                                {/* <FormControl fullWidth>
-                                                    <Select
-                                                        id="pet-sex"
-                                                        displayEmpty
-                                                        {...getFieldProps('sex')}
-                                                        input={<OutlinedInput id="select-pet-sex" />}
-                                                        error={Boolean(touched.sex && errors.sex)}
-                                                    > */}
-                                                        {/* <MenuItem value="" disabled><Typography variant="subtitle1">Seleccione el género</Typography></MenuItem>
-                                                        <MenuItem value="male">Macho</MenuItem>
-                                                        <MenuItem value="female">Hembra</MenuItem>
-                                                    </Select>
-                                                    {touched.sex && errors.sex && (
-                                                        <FormHelperText error>{errors.sex}</FormHelperText>
-                                                    )} */}
-                                                    {pet.gender}
-                                                {/* </FormControl> */}
+                                                <Typography color="black" variant="body1" sx={{ fontWeight: "500" }}>{genderName(pet.gender)}</Typography>
+                                            </Stack>
+                                        </Grid>
+                                        <Grid item xs={5}>
+                                            <Stack spacing={1.25}>
+                                                <InputLabel htmlFor="pet-dateOfBirth">Fecha de Nacimiento</InputLabel>
+                                                <Typography color="black" variant="body1" sx={{ fontWeight: "500" }}>{pet.birthday_date}</Typography>
+                                            </Stack>
+                                        </Grid>
+
+                                        <Grid item xs={12}>
+                                            <Stack spacing={1.25}>
+                                                <InputLabel htmlFor="pet-dateOfBirth"><strong>Historial de consultas:</strong></InputLabel>
+                                                <Box sx={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                                    {loading ? (
+                                                        <Box sx={{ display: "flex", my: 5, justifyContent: "center", alignItems: "center" }}>
+                                                            <CircularProgress />
+                                                        </Box>
+                                                    ) : (
+                                                        data.map((appointment) => (
+                                                            <PetHistoryAppointmentCard appointment={appointment} key={appointment.id} />
+                                                        ))
+                                                    )}
+                                                </Box>
                                             </Stack>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Stack spacing={1.25}>
-                                                <InputLabel htmlFor="pet-dateOfBirth">Fecha de Nacimiento</InputLabel>
-                                                {/* <TextField
-                                                    id="date"
-                                                    type="date"
-                                                    fullWidth
-                                                    placeholder="MM/DD/YYYY"
-                                                    {...getFieldProps('dateOfBirth')}
-                                                    sx={{ mt: 1 }}
-                                                    error={Boolean(touched.dateOfBirth && errors.dateOfBirth)}
-                                                    helperText={touched.dateOfBirth && errors.dateOfBirth}
-                                                    InputLabelProps={{
-                                                        shrink: true
-                                                    }}
-                                                /> */}
-                                                {pet.birthday_date}
+                                            <Stack direction="row" justifyContent="space-between">
+                                                <Button onClick={handlePreviousPage} disabled={currentPage === 1} startIcon={<ArrowLeft />}>
+                                                    Anterior
+                                                </Button>
+                                                <Button onClick={handleNextPage} disabled={currentPage === totalPages} endIcon={<ArrowRight />}>
+                                                    Siguiente
+                                                </Button>
                                             </Stack>
                                         </Grid>
                                     </Grid>
@@ -446,14 +252,11 @@ const PetProfile = ({ pet, onCancel }) => {
                         </DialogContent>
                         <Divider />
                         <DialogActions sx={{ p: 2.5 }}>
-                            <Grid container justifyContent="space-between" alignItems="center">
+                            <Grid container justifyContent="right" alignItems="center">
                                 <Grid item>
                                     <Stack direction="row" spacing={2} alignItems="center">
-                                        <Button color="error" onClick={onCancel}>
-                                            Cancelar
-                                        </Button>
-                                        <Button type="submit" variant="contained" disabled={isSubmitting}>
-                                            {pet ? 'Editar' : 'Agregar'}
+                                        <Button color="primary" variant="contained" onClick={onCancel}>
+                                            Volver
                                         </Button>
                                     </Stack>
                                 </Grid>
@@ -462,7 +265,6 @@ const PetProfile = ({ pet, onCancel }) => {
                     </form>
                 </LocalizationProvider>
             </FormikProvider>
-            {/* {!isCreating && <AlertCustomerDelete title={pet} open={openAlert} handleClose={handleAlertClose} getPets={getMyPets} />} */}
         </>
     );
 };

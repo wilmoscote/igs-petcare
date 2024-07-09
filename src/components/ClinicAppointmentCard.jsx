@@ -1,6 +1,6 @@
-import { Avatar, Box, Chip, Stack, Typography, useTheme } from '@mui/material'
+import { Avatar, Box, Button, Chip, Stack, Typography, useTheme } from '@mui/material'
 import { Theme } from 'emoji-picker-react'
-import { Man, Woman } from 'iconsax-react'
+import { ArrowRight, Man, Woman } from 'iconsax-react'
 import React from 'react'
 import { formatAge, formatToTime } from 'utils/petUtils'
 import { format } from 'date-fns';
@@ -19,25 +19,20 @@ const ClinicAppointmentCard = ({ appointment, onSelect, selected }) => {
         }}
             onClick={() => onSelect(appointment)}
         >
-            <Stack direction="row" alignItems="center" justifyContent={"space-between"} spacing={2}>
-                <Stack direction="row" alignItems="center" spacing={2}>
-                    <Avatar src={appointment?.pets.img_profile} alt={appointment?.pets.name} />
-                    <Box>
-                        <Typography variant="subtitle1" color={appointment?.pets.gender === "male" ? "#2CCCE4" : "#F47373"} >{appointment?.pets.name} {appointment?.pets.gender === "male" ? <Man size="13" color={"#2CCCE4"} /> : <Woman size="13" color={"#F47373"} />} </Typography>
-                        {/* <Typography variant="body2" color="text.secondary">
-                        {formatAge(appointment?.pets.birthday_date) || ""}
-                    </Typography> */}
-                        <Typography variant="subtitle2" color="black">{appointment?.service.name || ""}</Typography>
-                    </Box>
+            <Stack direction="column" spacing={2}>
+                <Stack direction="row" justifyContent={"space-between"} spacing={2}>
+                    <Stack direction="row" alignItems="center" spacing={2}>
+                        <Avatar src={appointment?.pets?.img_profile} alt={appointment?.pets?.name} />
+                        <Box>
+                            <Typography variant="subtitle1" color={appointment?.pets.gender === "male" ? "#2CCCE4" : "#F47373"} >{appointment?.pets.name} {appointment?.pets?.gender === "male" ? <Man size="13" color={"#2CCCE4"} /> : <Woman size="13" color={"#F47373"} />} </Typography>
+                            <Typography variant="subtitle1" color="black">{appointment?.service?.name || ""}</Typography>
+                        </Box>
+                    </Stack>
+                    <Stack alignItems={"center"}>
+                        <Chip label={formatToTime(appointment?.date)} color="success" sx={{ p: 0 }} />
+                    </Stack>
                 </Stack>
-                <Stack alignItems={"center"}>
-                    <Chip label={formatToTime(appointment?.date)} color="success" sx={{ p: 0 }} />
-                    {/* {appointment?.status === "active" ? (
-                        <Chip variant='light' label="Activa" color="success" sx={{ p: 0 }} />
-                    ) : (
-                        <Chip label="Inactiva" />
-                    )} */}
-                </Stack>
+                <Button fullWidth variant="contained" color="success" endIcon={<ArrowRight />} sx={{fontWeight: "600", textTransform: "none"}}>Ver cita</Button>
             </Stack>
         </MainCard>
     )

@@ -12,16 +12,16 @@ const BookingList = () => {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('active');
     const { getBookingList } = useAuth();
-    const [selectedBooking, setSelectedBooking] = useState(null); // Estado para la reserva seleccionada
-    const [modalOpen, setModalOpen] = useState(false); // Estado para manejar el modal
+    const [selectedBooking, setSelectedBooking] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
 
     const fetchBookings = async (status) => {
         setLoading(true);
         try {
             const response = await getBookingList(status);
-            console.log(response.data.data.data)
+            // console.log(response.data.data.data)
             if (response.data.success) {
-                setBookings(response.data.data.data);
+                setBookings(response.data?.data?.data?.reverse());
             }
         } catch (error) {
             console.error(error);
@@ -67,7 +67,7 @@ const BookingList = () => {
                 </Box>
             ) : (
                 <Grid container spacing={4}>
-                    {bookings.map((booking) => (
+                    {bookings?.map((booking) => (
                         <Grid item xs={12} md={6} lg={4} key={booking.id} sx={{ mt: 1 }}>
                             <Card
                                 elevation={0}

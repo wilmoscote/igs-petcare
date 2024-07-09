@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 // material-ui
 import {
@@ -30,20 +30,16 @@ import AnimateButton from 'components/@extended/AnimateButton';
 // assets
 import { Eye, EyeSlash } from 'iconsax-react';
 import AuthCodeModal from 'components/AuthCodeModal';
+import useClinicStore from 'store/useClinicStore';
 
 // ============================|| JWT - LOGIN ||============================ //
 
-const AuthLogin = ({ forgot }) => {
+const AuthLoginClinic = ({ forgot }) => {
+  const navigate = useNavigate()
+  const { user, setLogin, setUser } = useClinicStore();
   const [checked, setChecked] = useState(false);
-  const [email, setEmail] = useState("")
-  const { isLoggedIn, login } = useAuth();
+  const { isLoggedIn, loginClinic } = useAuth();
   const scriptedRef = useScriptRef();
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -58,21 +54,30 @@ const AuthLogin = ({ forgot }) => {
       <Formik
         initialValues={{
           email: '',
-          identification: '',
+          password: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
           email: Yup.string().email('Ingrese un correo válido').max(255).required('Ingrese un correo electrónico'),
-          identification: Yup.string().min(5).required('Ingrese un número de identificación'),
+          password: Yup.string().max(255).required('Ingrese una contraseña'),
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
-            setOpen(true)
-            await login(values.email, values.identification);
-            if (scriptedRef.current) {
-              setStatus({ success: true });
-              setSubmitting(false);
+            const response = await loginClinic(values.email, values.password);
+            // console.log(response.data)
+            if (response.data.success) {
+              setLogin(response.data.token)
+              setUser(response.data.data)
+              if (scriptedRef.current) {
+                setStatus({ success: true });
+              }
+              navigate("/clinic/dashboard/home")
+            } else {
+              setStatus({ success: false });
+              setErrors({ submit: response.data.message });
             }
+
+            setSubmitting(false);
           } catch (err) {
             console.error(err);
             if (scriptedRef.current) {
@@ -111,78 +116,23 @@ const AuthLogin = ({ forgot }) => {
                 <Stack spacing={1}>
                   <InputLabel htmlFor="email-login">Contraseña</InputLabel>
                   <OutlinedInput
-                    id="identification-login"
-                    type="identification"
-                    value={values.identification}
-                    name="identification"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Ingrese su número de identificación"
-                    fullWidth
-                    error={Boolean(touched.identification && errors.identification)}
-                  />
-                  {touched.identification && errors.identification && (
-                    <FormHelperText error id="standard-weight-helper-text-email-login">
-                      {errors.identification}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
-              {/* <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="password-login">Password</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.password && errors.password)}
-                    id="-password-login"
-                    type={showPassword ? 'text' : 'password'}
+                    id="password-login"
+                    type="password"
                     value={values.password}
                     name="password"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                          color="secondary"
-                        >
-                          {showPassword ? <Eye /> : <EyeSlash />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    placeholder="Enter password"
+                    placeholder="Ingrese su número de identificación"
+                    fullWidth
+                    error={Boolean(touched.password && errors.password)}
                   />
                   {touched.password && errors.password && (
-                    <FormHelperText error id="standard-weight-helper-text-password-login">
+                    <FormHelperText error id="standard-weight-helper-text-email-login">
                       {errors.password}
                     </FormHelperText>
                   )}
                 </Stack>
-              </Grid> */}
-
-              {/* <Grid item xs={12} sx={{ mt: -1 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={checked}
-                        onChange={(event) => setChecked(event.target.checked)}
-                        name="checked"
-                        color="primary"
-                        size="small"
-                      />
-                    }
-                    label={<Typography variant="h6">Keep me sign in</Typography>}
-                  />
-
-                  <Link variant="h6" component={RouterLink} to={isLoggedIn && forgot ? forgot : '/forgot-password'} color="text.primary">
-                    Forgot Password?
-                  </Link>
-                </Stack>
-              </Grid> */}
+              </Grid>
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
@@ -199,13 +149,12 @@ const AuthLogin = ({ forgot }) => {
           </form>
         )}
       </Formik>
-      <AuthCodeModal open={open} handleClose={handleClose} email={email} />
     </>
   );
 };
 
-AuthLogin.propTypes = {
+AuthLoginClinic.propTypes = {
   forgot: PropTypes.string
 };
 
-export default AuthLogin;
+export default AuthLoginClinic;

@@ -1,4 +1,4 @@
-import { Box, Chip, Grid, Stack, Tab, TextField, Typography, Tabs, Divider } from '@mui/material'
+import { Box, Chip, Grid, Stack, Tab, TextField, Typography, Tabs, Divider, CircularProgress } from '@mui/material'
 import { LocalizationProvider, StaticDatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import ClinicAppointmentCard from 'components/ClinicAppointmentCard';
@@ -15,6 +15,8 @@ import successDog4 from 'assets/images/success/success-dog-4.webp'
 import { useEffect } from 'react';
 import { useAuthStore } from 'store/useAuthStore';
 import AppointmentDetail from 'components/AppointmentDetail';
+import useClinicStore from 'store/useClinicStore';
+import useAuth from 'hooks/useAuth';
 
 function a11yProps(index) {
     return {
@@ -43,10 +45,15 @@ const formatDate = (date) => {
 }
 
 const ClinicDashboard = () => {
-    const { user } = useAuthStore()
-    const userName = user?.name?.split(" ").length <= 1 ? user?.name : user?.name?.split(" ")[0]
+    const { user } = useClinicStore();
+    const { getClinicBookingList } = useAuth();
+    const [bookings, setBookings] = useState([])
+    const [time, setTime] = useState("day")
+    const [doneBookings, setDoneBookings] = useState([])
+    const [loading, setLoading] = useState(false);
+    const [loadingDone, setLoadingDone] = useState(false);
+    const userName = user?.name
     const [data, setData] = useState(mockAppoinmentData)
-    const [value, setValue] = useState(startOfToday());
     const [valueTab, setValueTab] = useState(0);
     const [selectedAppointment, setSelectedAppointment] = useState(null)
     const [randomImage, setRandomImage] = useState(null);
@@ -56,11 +63,58 @@ const ClinicDashboard = () => {
         setValueTab(newValue);
     };
 
+    const handleTimeChange = (e) => {
+        setTime(e.target.value)
+    };
+
     useEffect(() => {
         const images = [successDog1, successDog2, successDog3, successDog4];
         const randomIndex = Math.floor(Math.random() * images.length);
         setRandomImage(images[randomIndex]);
     }, []);
+
+    const getBookingList = async () => {
+        setLoading(true);
+        try {
+            const response = await getClinicBookingList("active", time);
+            console.log(response.data)
+            if (response.data.success) {
+                setBookings(response.data.data);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const getDoneBookingList = async () => {
+        setLoadingDone(true);
+        try {
+            const response = await getClinicBookingList("inactive", time);
+            console.log(response.data)
+            if (response.data.success) {
+                setDoneBookings(response.data.data);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingDone(false);
+        }
+    }
+
+    const onChangeStatus = () => {
+        getBookingList()
+        getDoneBookingList()
+        setSelectedAppointment(null)
+    }
+
+    useEffect(() => {
+        getBookingList()
+        getDoneBookingList()
+        setSelectedAppointment(null)
+    }, [time])
+
 
     return (
         <Box sx={{ width: '100%', }}>
@@ -81,38 +135,70 @@ const ClinicDashboard = () => {
                                         placeholder="Birthday"
                                         type="date"
                                         defaultValue={today}
+                                        onChange={handleTimeChange}
                                         sx={{ width: 220 }}
                                         InputLabelProps={{
                                             shrink: true
                                         }}
                                     />
                                 </Stack>
-                                <Tabs value={valueTab} onChange={handleChangeTab} aria-label="basic tabs example">
-                                    <Tab label="Activas" icon={<Chip label="9" color="success" variant="contained" size="small" />} iconPosition="end" {...a11yProps(0)} />
-                                    <Tab label="Cumplidas" icon={<Chip label="3" color="warning" variant="contained" size="small" sx={{ color: "white" }} />} iconPosition="end" {...a11yProps(1)} />
-                                    <Tab
+                                <Box sx={{ display: "flex", width: "100%", justifyContent: "left", ml: 2 }}>
+                                    <Tabs value={valueTab} onChange={handleChangeTab} aria-label="basic tabs example">
+                                        <Tab label="Activas" icon={<Chip label={bookings?.length} color="success" variant="contained" size="small" />} iconPosition="end" {...a11yProps(0)} />
+                                        <Tab label="Cumplidas" icon={<Chip label={doneBookings?.length} color="warning" variant="contained" size="small" sx={{ color: "white" }} />} iconPosition="end" {...a11yProps(1)} />
+                                        {/* <Tab
                                         label="Todas"
                                         icon={<Chip label="12" color="info" variant="contained" size="small" />}
                                         iconPosition="end"
                                         {...a11yProps(2)}
-                                    />
-                                </Tabs>
+                                    /> */}
+                                    </Tabs>
+                                </Box>
                                 <Box sx={{ maxHeight: '50vh', overflowY: 'auto' }}>
                                     <TabPanel value={valueTab} index={0}>
-                                        {data.map((appointment) =>
-                                            <ClinicAppointmentCard appointment={appointment} key={appointment?.id} onSelect={setSelectedAppointment} selected={selectedAppointment} />
+                                        {loading ? (
+                                            <Box sx={{ display: "flex", my: 5, justifyContent: "center", alignItems: "center" }}>
+                                                <CircularProgress />
+                                            </Box>
+                                        ) : (
+                                            <>
+                                                {bookings && bookings?.length > 0 ? (
+                                                    bookings?.map((appointment) =>
+                                                        <ClinicAppointmentCard appointment={appointment} key={appointment?.id} onSelect={setSelectedAppointment} selected={selectedAppointment} />
+                                                    )
+                                                ) : (
+                                                    <Box sx={{ display: "flex", my: 5, justifyContent: "center", alignItems: "center" }}>
+                                                        <Typography variant="body1">No hay citas para mostrar</Typography>
+                                                    </Box>
+                                                )}
+                                            </>
                                         )}
+
                                     </TabPanel>
                                     <TabPanel value={valueTab} index={1}>
+                                        {loadingDone ? (
+                                            <Box sx={{ display: "flex", my: 5, justifyContent: "center", alignItems: "center" }}>
+                                                <CircularProgress />
+                                            </Box>
+                                        ) : (
+                                            <>
+                                                {doneBookings && doneBookings?.length > 0 ? (
+                                                    doneBookings?.map((appointment) =>
+                                                        <ClinicAppointmentCard appointment={appointment} key={appointment?.id} onSelect={setSelectedAppointment} selected={selectedAppointment} />
+                                                    )
+                                                ) : (
+                                                    <Box sx={{ display: "flex", my: 5, justifyContent: "center", alignItems: "center" }}>
+                                                        <Typography variant="body1">No hay citas para mostrar</Typography>
+                                                    </Box>
+                                                )}
+                                            </>
+                                        )}
+                                    </TabPanel>
+                                    {/* <TabPanel value={valueTab} index={2}>
                                         {data.map((appointment) =>
                                             <ClinicAppointmentCard appointment={appointment} key={appointment?.id} onSelect={setSelectedAppointment} selected={selectedAppointment} />
                                         )}
-                                    </TabPanel>
-                                    <TabPanel value={valueTab} index={2}>
-                                        {data.map((appointment) =>
-                                            <ClinicAppointmentCard appointment={appointment} key={appointment?.id} onSelect={setSelectedAppointment} selected={selectedAppointment} />
-                                        )}
-                                    </TabPanel>
+                                    </TabPanel> */}
                                 </Box>
                             </Stack>
                         </Grid>
@@ -134,7 +220,7 @@ const ClinicDashboard = () => {
                                 </Box>
                             ) : (
                                 <Box>
-                                    <AppointmentDetail booking={selectedAppointment} />
+                                    <AppointmentDetail booking={selectedAppointment} onChange={onChangeStatus} selected={setSelectedAppointment} />
                                 </Box>
                             )}
                         </Grid>

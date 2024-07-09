@@ -26,9 +26,9 @@ const ClinicRoutes = {
     },
     {
       element: (
-        // <ClinicAuthGuard>
-        <ClinicLayout />
-        // </ClinicAuthGuard>
+        <ClinicAuthGuard>
+          <ClinicLayout />
+        </ClinicAuthGuard>
       ),
       path: 'dashboard',
       children: [

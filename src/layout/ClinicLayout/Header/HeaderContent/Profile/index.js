@@ -20,6 +20,7 @@ import { ThemeMode } from 'config';
 import avatar1 from 'assets/images/users/avatar-6.png';
 import { Setting2, Profile, Logout } from 'iconsax-react';
 import { useAuthStore } from 'store/useAuthStore';
+import useClinicStore from 'store/useClinicStore';
 
 // tab panel wrapper
 function TabPanel(props) {
@@ -57,13 +58,13 @@ function a11yProps(index) {
 const ProfilePage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { setLogout, user } = useAuthStore();
+  const { setLogout, user } = useClinicStore();
   const { logout } = useAuth();
   const handleLogout = async () => {
     try {
       await logout();
       setLogout()
-      navigate(`/login`, {
+      navigate(`/clinic/login`, {
         state: {
           from: ''
         }

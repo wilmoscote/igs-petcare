@@ -13,6 +13,7 @@ import authReducer from 'store/reducers/auth';
 import Loader from 'components/Loader';
 import axios from 'utils/axios';
 import { useAuthStore } from 'store/useAuthStore';
+import useClinicStore from 'store/useClinicStore';
 
 const chance = new Chance();
 
@@ -306,8 +307,75 @@ export const JWTProvider = ({ children }) => {
     return axios.get(`/clinic/booking/user/list/${user?.uuid}?status=${status}&pagination=${pagination}`, config);
   }
 
-  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile, createOtp, validateOtp, getPets, getSpecies, createPet, deletePet, editPet, getClinics, getServices, createSchedule, getBookingList }}>{children}</JWTContext.Provider>;
+  //----------------- ENDPOINTS CLINIC
+  const loginClinic = async (email, password) => {
+    const currentTokens = useAuthStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    const body = {
+      email: email,
+      password: password,
+    };
+
+    return axios.post(`/clinic/login`, body, config);
+  }
+
+  const getClinicBookingList = async (status = "active", time = "day") => {
+    const currentTokens = useClinicStore.getState();
+    const { token, user } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+    // console.log(user)
+    return axios.get(`/clinic/booking/list/${user?.clinic[0]?.uuid}?status=${status}&time=${time}`, config);
+  }
+
+  const getPetBookingList = async (pet, pagination = 10, page) => {
+    const currentTokens = useClinicStore.getState();
+    const { token, user } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    return axios.get(`/clinic/booking/pet/list/${pet}?page=${page}&pagination=${pagination}`, config);
+  }
+
+  const changeBookingStatus = async (bookingId, status) => {
+    const currentTokens = useClinicStore.getState();
+    const { token } = currentTokens;
+
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+    const formData = new FormData();
+    formData.append('status', status);
+
+    return axios.put(`/clinic/booking/change-status/${bookingId}`, formData, config);
+  }
+
+  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile, createOtp, validateOtp, getPets, getSpecies, createPet, deletePet, editPet, getClinics, getServices, createSchedule, getBookingList, loginClinic, getClinicBookingList, getPetBookingList, changeBookingStatus }}>{children}</JWTContext.Provider>;
 };
+
+
 
 JWTProvider.propTypes = {
   children: PropTypes.node

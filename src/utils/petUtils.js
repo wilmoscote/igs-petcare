@@ -34,3 +34,11 @@ export const formatToDate = (dateString) => {
   const parsedDate = parse(dateString, 'yyyy-MM-dd HH:mm:ss', new Date());
   return format(parsedDate, 'dd MMM, yyyy', { locale: es });
 };
+
+export const genderName = (gender) => {
+  if (gender === "female") {
+    return "Hembra"
+  } else {
+    return "Mano"
+  }
+}
