@@ -5,6 +5,7 @@ import React from 'react'
 import { formatAge, formatToTime } from 'utils/petUtils'
 import { format } from 'date-fns';
 import MainCard from './MainCard'
+import { ThemeMode } from 'config'
 
 const PetHistoryAppointmentCard = ({ appointment, onSelect, selected }) => {
     const theme = useTheme();
@@ -13,7 +14,7 @@ const PetHistoryAppointmentCard = ({ appointment, onSelect, selected }) => {
         <MainCard sx={{
             mx: 2, mb: 1, transition: "background-color 0.2s ease-in-out", '&:hover': {
                 cursor: "pointer",
-                backgroundColor: "rgb(241 245 249)"
+                backgroundColor: theme.palette.mode === ThemeMode.LIGHT ? "rgb(241 245 249)" : "rgb(30 41 59)"
             },
             borderColor: appointment?.uuid === selected?.uuid ? theme.palette.primary.main : theme.palette.divider
         }}
@@ -28,9 +29,9 @@ const PetHistoryAppointmentCard = ({ appointment, onSelect, selected }) => {
                             <Briefcase color={theme.palette.primary.main} variant='Bold' size={"25"} />
                         )}
                         <Box>
-                            <Typography variant="body1" color="black" mb={0.5}>Servicio: <strong>{appointment?.service?.name || ""}</strong></Typography>
+                            <Typography variant="body1" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} mb={0.5}>Servicio: <strong>{appointment?.service?.name || ""}</strong></Typography>
                             <Typography variant="body1" mb={0.5}>Clínica: <strong>{appointment?.clinic?.name || ""}</strong></Typography>
-                            <Typography variant="body1" color="black">Fecha: <strong>{appointment?.date || ""}</strong></Typography>
+                            <Typography variant="body1" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>Fecha: <strong>{appointment?.date || ""}</strong></Typography>
                         </Box>
                     </Stack>
                     <Stack alignItems={"center"}>

@@ -16,6 +16,7 @@ import useConfig from 'hooks/useConfig';
 import DrawerHeader from 'layout/MainLayout/Drawer/DrawerHeader';
 import { MenuOrientation } from 'config';
 import { Fragment } from 'react';
+import ThemeButton from 'components/ThemeButton';
 
 // ==============================|| HEADER - CONTENT ||============================== //
 
@@ -39,6 +40,7 @@ const HeaderContent = () => {
 
       {/* <Notification /> */}
       {/* <Message /> */}
+      <ThemeButton />
       {!downLG && <Profile />}
       {downLG && <MobileSection />} 
     </>

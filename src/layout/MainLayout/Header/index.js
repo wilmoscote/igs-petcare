@@ -60,7 +60,7 @@ const Header = () => {
     position: 'fixed',
     elevation: 0,
     sx: {
-      bgcolor: "white", //alpha(theme.palette.background.default, 0.8)
+      bgcolor: alpha(theme.palette.background.default, 0.8),
       backdropFilter: 'blur(8px)',
       zIndex: 1200,
       width: isHorizontal

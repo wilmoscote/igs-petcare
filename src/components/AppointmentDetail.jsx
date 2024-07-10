@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Card, CardContent, Avatar, Stack, Button, Dialog } from '@mui/material';
+import { Box, Typography, Card, CardContent, Avatar, Stack, Button, Dialog, useTheme } from '@mui/material';
 import { format } from 'date-fns';
 import { formatAge } from 'utils/petUtils';
 import MainCard from './MainCard';
@@ -9,11 +9,13 @@ import PetProfile from './PetProfile';
 import { useState } from 'react';
 import UserDetailModal from './UserDetailModal';
 import AlertChangeBookingStatus from './AlertChangeBookingStatus';
+import { ThemeMode } from 'config';
 
 const AppointmentDetail = ({ booking, onChange, selected }) => {
+    const theme = useTheme();
     const [petDialog, setPetDialog] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false);
-  
+    const [openAlert, setOpenAlert] = useState(false);
 
     if (!booking) return null;
 
@@ -35,14 +37,14 @@ const AppointmentDetail = ({ booking, onChange, selected }) => {
                         <Stack direction={"row"} spacing={1} alignItems="center">
                             <Typography variant="subtitle1" color={booking?.pets.gender === "male" ? "#2CCCE4" : "#F47373"} >{booking?.pets.name} {booking?.pets.gender === "male" ? <Man size="13" color={"#2CCCE4"} /> : <Woman size="13" color={"#F47373"} />}&nbsp;</Typography>
                             -
-                            <Typography variant="body2" color="textSecondary">
+                            <Typography variant="body2" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
                                 {formatAge(booking.pets.birthday_date)}
                             </Typography>
                         </Stack>
-                        <Typography variant="body2" color="textSecondary">
+                        <Typography variant="body2" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
                             {booking.pets.specie?.name || ""}, {booking.pets.breed?.name || ""}
                         </Typography>
-                        <Button fullWidth variant="outlined" endIcon={<Pet variant='Bold' />} sx={{ fontWeight: "500", textTransform: "none", mt: 1 }} onClick={() => setPetDialog(true)}>Ver perfil de mascota</Button>
+                        <Button fullWidth variant={theme.palette.mode === ThemeMode.LIGHT ? "outlined" : "contained"} endIcon={<Pet variant='Bold' />} sx={{ fontWeight: "500", textTransform: "none", mt: 1 }} onClick={() => setPetDialog(true)}>Ver perfil de mascota</Button>
                     </Box>
                 </Stack>
             </MainCard>
@@ -56,7 +58,7 @@ const AppointmentDetail = ({ booking, onChange, selected }) => {
                         <Typography variant="body1"><strong>Dirección:</strong> {booking?.user?.address || ""}</Typography>
                         <Typography variant="body1"><strong>Email:</strong> {booking?.user?.email || ""}</Typography>
                         <Typography variant="body1"><strong>Teléfono:</strong> {booking?.user?.phone || ""}</Typography>
-                        <Button variant="outlined" endIcon={<Personalcard variant='Bold' />} sx={{ fontWeight: "500", textTransform: "none", mt: 1 }} onClick={() => setIsModalOpen(true)}>Ver perfil de dueño</Button>
+                        <Button variant={theme.palette.mode === ThemeMode.LIGHT ? "outlined" : "contained"} endIcon={<Personalcard variant='Bold' />} sx={{ fontWeight: "500", textTransform: "none", mt: 1 }} onClick={() => setIsModalOpen(true)}>Ver perfil de dueño</Button>
                     </Box>
                 </Stack>
             </MainCard>

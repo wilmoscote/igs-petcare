@@ -11,7 +11,7 @@ const BookingDetailModal = ({ open, handleClose, booking }) => {
              <DialogTitle>
                 <Stack direction="row" justifyContent={"space-between"} spacing={2} alignItems="center">
                     <Typography fontWeight={"bold"} variant="h5">Detalles de la Reserva</Typography>
-                    <Chip label={booking.status === 'active' ? 'Activa' : 'Inactiva'} color={booking.status === 'active' ? 'success' : 'default'} />
+                    <Chip label={booking.status === 'active' ? 'Activa' : 'Cumplida'} color={booking.status === 'active' ? 'success' : 'default'} />
                 </Stack>
             </DialogTitle>
             <DialogContent dividers>

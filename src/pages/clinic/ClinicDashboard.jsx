@@ -1,4 +1,4 @@
-import { Box, Chip, Grid, Stack, Tab, TextField, Typography, Tabs, Divider, CircularProgress } from '@mui/material'
+import { Box, Chip, Grid, Stack, Tab, TextField, Typography, Tabs, Divider, CircularProgress, useTheme } from '@mui/material'
 import { LocalizationProvider, StaticDatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import ClinicAppointmentCard from 'components/ClinicAppointmentCard';
@@ -17,6 +17,7 @@ import { useAuthStore } from 'store/useAuthStore';
 import AppointmentDetail from 'components/AppointmentDetail';
 import useClinicStore from 'store/useClinicStore';
 import useAuth from 'hooks/useAuth';
+import { ThemeMode } from 'config';
 
 function a11yProps(index) {
     return {
@@ -45,6 +46,7 @@ const formatDate = (date) => {
 }
 
 const ClinicDashboard = () => {
+    const theme = useTheme();
     const { user } = useClinicStore();
     const { getClinicBookingList } = useAuth();
     const [bookings, setBookings] = useState([])
@@ -77,7 +79,7 @@ const ClinicDashboard = () => {
         setLoading(true);
         try {
             const response = await getClinicBookingList("active", time);
-            console.log(response.data)
+            // console.log(response.data)
             if (response.data.success) {
                 setBookings(response.data.data);
             }
@@ -92,7 +94,7 @@ const ClinicDashboard = () => {
         setLoadingDone(true);
         try {
             const response = await getClinicBookingList("inactive", time);
-            console.log(response.data)
+            // console.log(response.data)
             if (response.data.success) {
                 setDoneBookings(response.data.data);
             }
@@ -136,7 +138,10 @@ const ClinicDashboard = () => {
                                         type="date"
                                         defaultValue={today}
                                         onChange={handleTimeChange}
-                                        sx={{ width: 220 }}
+                                        sx={{
+                                            width: 220,
+                                            color: theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"
+                                        }}
                                         InputLabelProps={{
                                             shrink: true
                                         }}

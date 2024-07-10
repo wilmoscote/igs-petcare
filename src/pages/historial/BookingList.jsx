@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button, Stack, Avatar, CircularProgress, Chip } from '@mui/material';
+import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button, Stack, Avatar, CircularProgress, Chip, useTheme } from '@mui/material';
 import { format } from 'date-fns';
 import useAuth from 'hooks/useAuth';
 import { Man, Woman } from 'iconsax-react';
 import { formatAge } from 'utils/petUtils';
 import BookingDetailModal from './BookingDetailModal';
 import { FormattedMessage } from 'react-intl';
+import { ThemeMode } from 'config';
 
 const BookingList = () => {
+    const theme = useTheme();
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('active');
@@ -58,7 +60,7 @@ const BookingList = () => {
                     Activas
                 </Button>
                 <Button variant={filter === 'inactive' ? 'contained' : 'outlined'} onClick={() => handleFilterChange('inactive')} sx={{ mr: 2 }}>
-                    Inactivas
+                    Cumplidas
                 </Button>
             </Box>
             {loading ? (
@@ -92,19 +94,19 @@ const BookingList = () => {
                                         {filter === "active" ? (
                                             <Chip label="Activa" color="success" />
                                         ) : (
-                                            <Chip label="Inactiva" />
+                                            <Chip label="Cumplida" />
                                         )}
                                     </Box>
-                                    <Typography variant="body1" color="black" mb={0.5} mt={1}>
+                                    <Typography variant="body1" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} mb={0.5} mt={1}>
                                         Servicio: <span style={{ fontWeight: "600" }}> {booking.service?.name}</span>
                                     </Typography>
-                                    <Typography variant="body1" color="black" mb={0.5}>
+                                    <Typography variant="body1" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} mb={0.5}>
                                         Clínica: <span style={{ fontWeight: "600" }}> {booking.clinic?.name}</span>
                                     </Typography>
-                                    <Typography variant="body1" color="black" mb={0.5}>
+                                    <Typography variant="body1" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} mb={0.5}>
                                         Fecha: <span style={{ fontWeight: "600" }}> {format(new Date(booking.date), 'yyyy-MM-dd HH:mm:ss')}</span>
                                     </Typography>
-                                    <Typography variant="body1" color="black" mb={0.5}>
+                                    <Typography variant="body1" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} mb={0.5}>
                                         Código de Reserva: <span style={{ fontWeight: "600" }}>{booking.booking_code}</span>
                                     </Typography>
                                 </CardContent>

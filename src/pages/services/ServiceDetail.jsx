@@ -45,6 +45,7 @@ import { dispatch } from 'store';
 import { openSnackbar } from 'store/reducers/snackbar';
 import { LoadingButton } from '@mui/lab';
 import ConfirmSchedule from './ConfirmSchedule';
+import { ThemeMode } from 'config';
 
 const formatTime = (time) => {
     const [hour, minute] = time.split(':');
@@ -250,7 +251,7 @@ const ServiceDetail = () => {
             }}
         >
             <Container sx={{
-                display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: "white", px: { xs: 3, md: 15 }, py: { xs: 4, md: 8 }, borderRadius: 3,
+                display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: theme.palette.mode === ThemeMode.LIGHT ? "white" : "rgb(30 41 59)", px: { xs: 3, md: 15 }, py: { xs: 4, md: 8 }, borderRadius: 3,
             }}>
                 <Box minWidth={"100%"}>
                     <Typography variant='h3' gutterBottom>Detalles del servicio: </Typography>
@@ -324,7 +325,7 @@ const ServiceDetail = () => {
                                                 <Box>
                                                     <Typography variant="subtitle1" >{clinic.name}  </Typography>
                                                     <Typography variant="body2" color="secondary">{clinic.address || ""}</Typography>
-                                                    <Typography variant="body2" color="black">Horario: {formatTime(clinic.time_start)} a {formatTime(clinic.time_end)}</Typography>
+                                                    <Typography variant="body2" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>Horario: {formatTime(clinic.time_start)} a {formatTime(clinic.time_end)}</Typography>
                                                 </Box>
                                             </Stack>
                                         </MenuItem>

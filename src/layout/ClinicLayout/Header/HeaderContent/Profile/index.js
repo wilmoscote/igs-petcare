@@ -114,7 +114,7 @@ const ProfilePage = () => {
         <Stack direction="row" spacing={1.25} alignItems="left" sx={{ px: 2 }}>
           <Avatar alt="profile user" src={avatar1} />
           <Stack>
-            <Typography variant="subtitle1" color="black" textAlign={"left"}>{user?.name ?? "Usuario"}</Typography>
+            <Typography variant="subtitle1" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} textAlign={"left"}>{user?.name ?? "Usuario"}</Typography>
             <Typography variant="body2" color="secondary" textAlign={"left"}>
               Veterinario
             </Typography>

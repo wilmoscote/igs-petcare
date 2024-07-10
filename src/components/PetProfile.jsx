@@ -126,7 +126,7 @@ const PetProfile = ({ pet, onCancel }) => {
         setLoading(true);
         try {
             const response = await getPetBookingList(pet?.uuid, 10, currentPage);
-            console.log(response.data)
+            // console.log(response.data)
             if (response.data.success) {
                 setData(response.data.data.data)
                 setTotalPages(response.data.data.last_page);
@@ -188,7 +188,7 @@ const PetProfile = ({ pet, onCancel }) => {
                                         <Grid item xs={3}>
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-name">Nombre</InputLabel>
-                                                <Typography color="black" variant="body1" sx={{ fontWeight: "500" }}>
+                                                <Typography color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} variant="body1" sx={{ fontWeight: "500" }}>
                                                     {pet.name}
                                                 </Typography>
                                             </Stack>
@@ -196,7 +196,7 @@ const PetProfile = ({ pet, onCancel }) => {
                                         <Grid item xs={3}>
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-species">Especie</InputLabel>
-                                                <Typography color="black" variant="body1" sx={{ fontWeight: "500" }}>
+                                                <Typography color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} variant="body1" sx={{ fontWeight: "500" }}>
                                                     {pet.specie.name}
                                                 </Typography>
                                             </Stack>
@@ -204,19 +204,19 @@ const PetProfile = ({ pet, onCancel }) => {
                                         <Grid item xs={3}>
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-breed">Raza</InputLabel>
-                                                <Typography color="black" variant="body1" sx={{ fontWeight: "500" }}>{pet.breed.name}</Typography>
+                                                <Typography color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} variant="body1" sx={{ fontWeight: "500" }}>{pet.breed.name}</Typography>
                                             </Stack>
                                         </Grid>
                                         <Grid item xs={3}>
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-sex">Género</InputLabel>
-                                                <Typography color="black" variant="body1" sx={{ fontWeight: "500" }}>{genderName(pet.gender)}</Typography>
+                                                <Typography color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} variant="body1" sx={{ fontWeight: "500" }}>{genderName(pet.gender)}</Typography>
                                             </Stack>
                                         </Grid>
                                         <Grid item xs={5}>
                                             <Stack spacing={1.25}>
                                                 <InputLabel htmlFor="pet-dateOfBirth">Fecha de Nacimiento</InputLabel>
-                                                <Typography color="black" variant="body1" sx={{ fontWeight: "500" }}>{pet.birthday_date}</Typography>
+                                                <Typography color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} variant="body1" sx={{ fontWeight: "500" }}>{pet.birthday_date}</Typography>
                                             </Stack>
                                         </Grid>
 

@@ -8,6 +8,7 @@ import successDog3 from 'assets/images/success/success-dog-3.webp'
 import successDog4 from 'assets/images/success/success-dog-4.webp'
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { ThemeMode } from 'config';
 
 const SuccessSchedule = () => {
   const theme = useTheme();
@@ -38,7 +39,7 @@ const SuccessSchedule = () => {
         mt: { xs: 5, sm: 0, md: 0, lg: 0, xl: 10 }
       }}
     >
-      <Grid container spacing={4} sx={{ maxWidth: '1200px', width: '100%', backgroundColor: "white", pl: 5, borderRadius: 4 }}>
+      <Grid container spacing={4} sx={{ maxWidth: '1200px', width: '100%', backgroundColor:theme.palette.mode === ThemeMode.LIGHT ? "white" : "rgb(30 41 59)", pl: 5, borderRadius: 4 }}>
         <Grid item xs={12} md={6}>
           <Box
             sx={{

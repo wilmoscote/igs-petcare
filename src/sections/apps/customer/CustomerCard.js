@@ -19,7 +19,8 @@ import {
   Menu,
   MenuItem,
   Stack,
-  Typography
+  Typography,
+  useTheme
 } from '@mui/material';
 
 // third-party
@@ -43,12 +44,14 @@ import usePetStore from 'store/usePetStore';
 import { useNavigate } from 'react-router';
 
 import { formatAge } from 'utils/petUtils';
+import { ThemeMode } from 'config';
 
 const avatarImage = require.context('assets/images/users', true);
 
 // ==============================|| CUSTOMER - CARD ||============================== //
 
 const CustomerCard = ({ customer, getPets }) => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const { setSelectedPet } = usePetStore();
   const [open, setOpen] = useState(false);
@@ -102,10 +105,10 @@ const CustomerCard = ({ customer, getPets }) => {
                 <Box>
                   <ListItemText
                     primary={<Typography variant="subtitle1" color={customer.gender === "male" ? "#2CCCE4" : "#F47373"} >{customer.name} {customer.gender === "male" ? <Man size="13" /> : <Woman size="13" />} </Typography>}
-                    secondary={<Typography color="text.secondary" mt={0.3}>{customer.specie?.name || ""}, {customer.breed?.name || ""}</Typography>}
-                    sx={{mb: 0}}
+                    secondary={<Typography color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} mt={0.3}>{customer.specie?.name || ""}, {customer.breed?.name || ""}</Typography>}
+                    sx={{ mb: 0 }}
                   />
-                  <Typography color="text.secondary" mt={0.3}>{formatAge(customer.birthday_date) || ""}</Typography>
+                  <Typography color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} mt={0.3}>{formatAge(customer.birthday_date) || ""}</Typography>
                 </Box>
               </ListItem>
             </List>
