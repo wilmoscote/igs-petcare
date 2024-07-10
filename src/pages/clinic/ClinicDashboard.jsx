@@ -48,7 +48,8 @@ const ClinicDashboard = () => {
     const { user } = useClinicStore();
     const { getClinicBookingList } = useAuth();
     const [bookings, setBookings] = useState([])
-    const [time, setTime] = useState("day")
+    const today = formatDate(new Date());
+    const [time, setTime] = useState(today)
     const [doneBookings, setDoneBookings] = useState([])
     const [loading, setLoading] = useState(false);
     const [loadingDone, setLoadingDone] = useState(false);
@@ -57,7 +58,6 @@ const ClinicDashboard = () => {
     const [valueTab, setValueTab] = useState(0);
     const [selectedAppointment, setSelectedAppointment] = useState(null)
     const [randomImage, setRandomImage] = useState(null);
-    const today = formatDate(new Date());
 
     const handleChangeTab = (event, newValue) => {
         setValueTab(newValue);

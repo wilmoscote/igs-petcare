@@ -6,6 +6,7 @@ import { useMediaQuery, Button, ButtonGroup, Grid, Stack, Tooltip, Typography } 
 
 // third-party
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 // project-imports
 import IconButton from 'components/@extended/IconButton';
@@ -16,17 +17,17 @@ import { ArrowLeft2, ArrowRight2, Calendar1, Category, Grid6, TableDocument } fr
 // constant
 const viewOptions = [
   {
-    label: 'Month',
+    label: 'Mes',
     value: 'dayGridMonth',
     icon: Category
   },
   {
-    label: 'Week',
+    label: 'Semana',
     value: 'timeGridWeek',
     icon: Grid6
   },
   {
-    label: 'Day',
+    label: 'Dia',
     value: 'timeGridDay',
     icon: Calendar1
   },
@@ -39,7 +40,7 @@ const viewOptions = [
 
 // ==============================|| CALENDAR - TOOLBAR ||============================== //
 
-const Toolbar = ({ date, view, onClickNext, onClickPrev, onClickToday, onChangeView, ...others }) => {
+const Toolbar = ({ date, view, onClickNext, onClickPrev, onClickToday, onChangeView, activeFilter, onChangeFilter, ...others }) => {
   const matchDownSM = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const [viewFilter, setViewFilter] = useState(viewOptions);
@@ -57,7 +58,7 @@ const Toolbar = ({ date, view, onClickNext, onClickPrev, onClickToday, onChangeV
     <Grid alignItems="center" container justifyContent="space-between" spacing={matchDownSM ? 1 : 3} {...others} sx={{ pb: 3 }}>
       <Grid item>
         <Button variant="outlined" onClick={onClickToday} size={matchDownSM ? 'small' : 'medium'}>
-          Today
+          Hoy
         </Button>
       </Grid>
       <Grid item>
@@ -66,7 +67,7 @@ const Toolbar = ({ date, view, onClickNext, onClickPrev, onClickToday, onChangeV
             <ArrowLeft2 />
           </IconButton>
           <Typography variant={matchDownSM ? 'h5' : 'h3'} color="textPrimary">
-            {format(date, 'MMMM yyyy')}
+            {format(date, 'MMMM yyyy', { locale: es })}
           </Typography>
           <IconButton onClick={onClickNext} size={matchDownSM ? 'small' : 'large'}>
             <ArrowRight2 />
@@ -74,35 +75,55 @@ const Toolbar = ({ date, view, onClickNext, onClickPrev, onClickToday, onChangeV
         </Stack>
       </Grid>
       <Grid item>
-        <ButtonGroup variant="outlined" aria-label="outlined button group">
-          {viewFilter.map((viewOption) => {
-            const Icon = viewOption.icon;
-            return (
-              <Tooltip title={viewOption.label} key={viewOption.value}>
-                <Button
-                  size={matchDownSM ? 'small' : 'large'}
-                  disableElevation
-                  variant={viewOption.value === view ? 'contained' : 'outlined'}
-                  onClick={() => onChangeView(viewOption.value)}
-                >
-                  <Icon variant={viewOption.value === view ? 'Bold' : 'Linear'} />
-                </Button>
-              </Tooltip>
-            );
-          })}
-        </ButtonGroup>
+        <Stack direction={"row"} spacing={2}>
+          <ButtonGroup variant="outlined" aria-label="outlined button group">
+            <Button
+              size={matchDownSM ? 'small' : 'large'}
+              disableElevation
+              variant={activeFilter === "active" ? 'contained' : 'outlined'}
+              onClick={() => onChangeFilter("active")}
+            >
+              Activas
+            </Button>
+            <Button
+              size={matchDownSM ? 'small' : 'large'}
+              disableElevation
+              variant={activeFilter === "inactive" ? 'contained' : 'outlined'}
+              onClick={() => onChangeFilter("inactive")}
+            >
+              Cumplidas
+            </Button>
+            <Button
+              size={matchDownSM ? 'small' : 'large'}
+              disableElevation
+              variant={activeFilter === null ? 'contained' : 'outlined'}
+              onClick={() => onChangeFilter(null)}
+            >
+              Todas
+            </Button>
+          </ButtonGroup>
+
+          <ButtonGroup variant="outlined" aria-label="outlined button group">
+            {viewFilter.map((viewOption) => {
+              const Icon = viewOption.icon;
+              return (
+                <Tooltip title={viewOption.label} key={viewOption.value}>
+                  <Button
+                    size={matchDownSM ? 'small' : 'large'}
+                    disableElevation
+                    variant={viewOption.value === view ? 'contained' : 'outlined'}
+                    onClick={() => onChangeView(viewOption.value)}
+                  >
+                    <Icon variant={viewOption.value === view ? 'Bold' : 'Linear'} />
+                  </Button>
+                </Tooltip>
+              );
+            })}
+          </ButtonGroup>
+        </Stack>
       </Grid>
     </Grid>
   );
-};
-
-Toolbar.propTypes = {
-  date: PropTypes.object,
-  view: PropTypes.string,
-  onClickNext: PropTypes.func,
-  onClickPrev: PropTypes.func,
-  onClickToday: PropTypes.func,
-  onChangeView: PropTypes.func
 };
 
 export default Toolbar;

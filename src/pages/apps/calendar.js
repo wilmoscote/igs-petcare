@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 // material-ui
-import { useMediaQuery, Box, Dialog, SpeedDial, Tooltip } from '@mui/material';
+import { useMediaQuery, Box, Dialog, SpeedDial, Tooltip, useTheme, Skeleton, Grid } from '@mui/material';
 
 // third-party
 import FullCalendar from '@fullcalendar/react';
@@ -10,6 +10,7 @@ import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
+import esLocale from '@fullcalendar/core/locales/es';
 
 // project imports
 import Loader from 'components/Loader';
@@ -19,31 +20,74 @@ import Toolbar from 'sections/apps/calendar/Toolbar';
 import AddEventForm from 'sections/apps/calendar/AddEventForm';
 
 import { getEvents, selectEvent, selectRange, toggleModal, updateCalendarView, updateEvent } from 'store/reducers/calendar';
-
+import { format, getMonth, getYear } from 'date-fns';
 import { Add } from 'iconsax-react';
 import { dispatch, useSelector } from 'store';
+import useAuth from 'hooks/useAuth';
+import BookingDetailModal from 'components/BookingDetailModal';
 
 // ==============================|| CALENDAR - MAIN ||============================== //
 
 const Calendar = () => {
+  const theme = useTheme();
+  const { getClinicBookingListCalendar } = useAuth();
   const matchDownSM = useMediaQuery((theme) => theme.breakpoints.down('sm'));
-
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { calendarView, events, isModalOpen, selectedRange } = useSelector((state) => state.calendar);
+  const [activeFilter, setActiveFilter] = useState(null)
+  const [selectedEvent, setSelectedEvent] = useState(null)
+  const { calendarView } = useSelector((state) => state.calendar);
+  const [month, setMonth] = useState(getMonth(new Date()) + 1);
+  const [year, setYear] = useState(getYear(new Date()));
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRange, setSelectedRange] = useState(null);
 
-  const selectedEvent = useSelector((state) => {
-    const { events, selectedEventId } = state.calendar;
-    if (selectedEventId) {
-      return events.find((event) => event.id === selectedEventId);
+  const fetchBookings = async () => {
+    try {
+      const response = await getClinicBookingListCalendar(activeFilter, "month", month, year);
+      // console.log(response.data)
+      if (response.data.success) {
+        const transformedEvents = response.data.data.map(booking => ({
+          id: booking.id,
+          title: `${booking.service.name} con ${booking.pets.name}`,
+          start: booking.date,
+          end: new Date(new Date(booking.date).setHours(new Date(booking.date).getHours() + 1)),
+          backgroundColor: booking.status === 'active' ? theme.palette.success.main : theme.palette.info.main,
+          borderColor: theme.palette.divider,
+          extendedProps: {
+            booking: booking,
+            additionalInfo: booking.additional_info,
+            contact: booking.additional_contact,
+            status: booking.status,
+            user: {
+              name: booking.user.name,
+              phone: booking.user.phone,
+              address: booking.user.address,
+              email: booking.user.email,
+            },
+            pets: booking.pets,
+            clinic: booking.clinic,
+            booking_code: booking.booking_code,
+          }
+        }));
+        setEvents(transformedEvents);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-    return null;
-  });
+  };
+
+  useEffect(() => {
+    fetchBookings();
+  }, [activeFilter, month, year]);
 
   useEffect(() => {
     const newView = matchDownSM ? 'listWeek' : 'dayGridMonth';
     const viewCall = dispatch(updateCalendarView(newView));
-    const eventCall = dispatch(getEvents());
-    Promise.all([viewCall, eventCall]).then(() => setLoading(false));
+    // const eventCall = dispatch(getEvents());
+    // Promise.all([viewCall, eventCall]).then(() => setLoading(false));
     // eslint-disable-next-line
   }, []);
 
@@ -63,15 +107,17 @@ const Calendar = () => {
 
   const [date, setDate] = useState(new Date());
 
-  // calendar toolbar events
   const handleDateToday = () => {
     const calendarEl = calendarRef.current;
 
     if (calendarEl) {
       const calendarApi = calendarEl.getApi();
-
       calendarApi.today();
-      setDate(calendarApi.getDate());
+      const newDate = calendarApi.getDate();
+      setDate(newDate);
+      setMonth(getMonth(newDate) + 1);
+      setYear(getYear(newDate));
+      console.log(newDate);
     }
   };
 
@@ -86,41 +132,30 @@ const Calendar = () => {
     }
   };
 
-  const handleDatePrev = () => {
-    const calendarEl = calendarRef.current;
-
-    if (calendarEl) {
-      const calendarApi = calendarEl.getApi();
-
-      calendarApi.prev();
-      setDate(calendarApi.getDate());
-    }
-  };
-
   const handleDateNext = () => {
     const calendarEl = calendarRef.current;
 
     if (calendarEl) {
       const calendarApi = calendarEl.getApi();
-
       calendarApi.next();
-      setDate(calendarApi.getDate());
+      const newDate = calendarApi.getDate();
+      setDate(newDate);
+      setMonth(getMonth(newDate) + 1);
+      setYear(getYear(newDate));
     }
   };
 
-  // calendar events
-  const handleRangeSelect = (arg) => {
+  const handleDatePrev = () => {
     const calendarEl = calendarRef.current;
+
     if (calendarEl) {
       const calendarApi = calendarEl.getApi();
-      calendarApi.unselect();
+      calendarApi.prev();
+      const newDate = calendarApi.getDate();
+      setDate(newDate);
+      setMonth(getMonth(newDate) + 1);
+      setYear(getYear(newDate));
     }
-
-    dispatch(selectRange(arg.start, arg.end));
-  };
-
-  const handleEventSelect = (arg) => {
-    dispatch(selectEvent(arg.event.id));
   };
 
   const handleEventUpdate = async ({ event }) => {
@@ -138,11 +173,36 @@ const Calendar = () => {
   };
 
   const handleModal = () => {
-    dispatch(toggleModal());
+    setIsModalOpen(!isModalOpen);
   };
 
-  if (loading) return <Loader />;
+  const handleEventSelect = (info) => {
+    setSelectedEvent(info.event);
+    handleModal();
+  };
 
+  const handleRangeSelect = (info) => {
+    setSelectedRange(info);
+    handleModal();
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Loader />
+        <Box sx={{ p: 3 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 2 }} />
+            </Grid>
+            <Grid item xs={12}>
+              <Skeleton variant="rectangular" height={600} sx={{ borderRadius: 2 }} />
+            </Grid>
+          </Grid>
+        </Box>
+      </>
+    );
+  }
   return (
     <Box sx={{ position: 'relative' }}>
       <CalendarStyled>
@@ -153,9 +213,12 @@ const Calendar = () => {
           onClickPrev={handleDatePrev}
           onClickToday={handleDateToday}
           onChangeView={handleViewChange}
+          activeFilter={activeFilter}
+          onChangeFilter={setActiveFilter}
         />
 
         <FullCalendar
+          locale={esLocale}
           weekends
           editable
           droppable
@@ -176,28 +239,26 @@ const Calendar = () => {
           eventResize={handleEventUpdate}
           height={matchDownSM ? 'auto' : 720}
           plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin, interactionPlugin]}
+          eventDidMount={(info) => {
+            if (info.view.type === 'listWeek' || info.view.type === 'listDay' || info.view.type === 'listMonth') {
+              let dotEl = info.el.querySelector('.fc-list-event-dot');
+              if (dotEl) {
+                dotEl.style.backgroundColor = info.event.extendedProps.status === 'active' ? "green" : "blue";
+              }
+            }
+          }}
         />
       </CalendarStyled>
-
-      {/* Dialog renders its body even if not open */}
-      <Dialog
-        maxWidth="sm"
-        TransitionComponent={PopupTransition}
-        fullWidth
-        onClose={handleModal}
-        open={isModalOpen}
-        sx={{ '& .MuiDialog-paper': { p: 0, bgcolor: 'secondary.lighter' } }}
-      >
-        <AddEventForm event={selectedEvent} range={selectedRange} onCancel={handleModal} />
-      </Dialog>
-      <Tooltip title="Add New Event">
+      <BookingDetailModal open={isModalOpen} event={selectedEvent} onCancel={handleModal} onChange={fetchBookings} />
+      {/* </Dialog> */}
+      {/* <Tooltip title="Add New Event">
         <SpeedDial
           ariaLabel="add-event-fab"
           sx={{ display: 'inline-flex', position: 'sticky', bottom: 24, left: '100%', transform: 'translate(-50%, -50% )' }}
           icon={<Add />}
           onClick={handleModal}
         />
-      </Tooltip>
+      </Tooltip> */}
     </Box>
   );
 };

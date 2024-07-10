@@ -404,10 +404,4 @@ const AddEventFrom = ({ event, range, onCancel }) => {
   );
 };
 
-AddEventFrom.propTypes = {
-  event: PropTypes.object,
-  range: PropTypes.object,
-  onCancel: PropTypes.func
-};
-
 export default AddEventFrom;

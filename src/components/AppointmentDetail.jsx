@@ -13,7 +13,7 @@ import AlertChangeBookingStatus from './AlertChangeBookingStatus';
 const AppointmentDetail = ({ booking, onChange, selected }) => {
     const [petDialog, setPetDialog] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [openAlert, setOpenAlert] = useState(false);
+  
 
     if (!booking) return null;
 
