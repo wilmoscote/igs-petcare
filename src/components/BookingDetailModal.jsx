@@ -38,12 +38,12 @@ const BookingDetailModal = ({ open, onCancel, event, onChange }) => {
                         <Avatar src={event.extendedProps.pets.img_profile} alt={event.extendedProps.pets.name} />
                         <Box>
                             <Stack direction={"row"} spacing={1} alignItems="center">
-                                <Typography variant="subtitle1" color={event.extendedProps?.pets.gender === "male" ? "#2CCCE4" : "#F47373"} >{event.extendedProps?.pets.name} {event.extendedProps?.pets.gender === "male" ? <Man size="13" color={"#2CCCE4"} /> : <Woman size="13" color={"#F47373"} />}&nbsp;</Typography>
+                                <Typography variant="h5" fontWeight={"bold"} color={event.extendedProps?.pets.gender === "male" ? "#2CCCE4" : "#F47373"} >{event.extendedProps?.pets.name} {event.extendedProps?.pets.gender === "male" ? <Man size="13" color={"#2CCCE4"} /> : <Woman size="13" color={"#F47373"} />}&nbsp;</Typography>
                             </Stack>
-                            <Typography variant="body2" color="textSecondary">
+                            <Typography variant="body1" fontWeight={"bold"} color="textSecondary">
                                 {formatAge(event.extendedProps.pets.birthday_date)}
                             </Typography>
-                            <Typography variant="body2" color="textSecondary">
+                            <Typography variant="body1" fontWeight={"bold"} color="textSecondary">
                                 {event.extendedProps.pets.specie?.name || ""}, {event.extendedProps.pets.breed?.name || ""}
                             </Typography>
                         </Box>

@@ -47,6 +47,16 @@ import { LoadingButton } from '@mui/lab';
 import ConfirmSchedule from './ConfirmSchedule';
 import { ThemeMode } from 'config';
 
+const weekDaysMap = {
+    'SUNDAY': 0,
+    'MONDAY': 1,
+    'TUESDAY': 2,
+    'WEDNESDAY': 3,
+    'THURSDAY': 4,
+    'FRIDAY': 5,
+    'SATURDAY': 6
+};
+
 const formatTime = (time) => {
     const [hour, minute] = time.split(':');
     const date = new Date(0, 0, 0, hour, minute);
@@ -98,7 +108,7 @@ const ServiceDetail = () => {
         setClinicError(null);
         setSelectedClinic(event.target.value);
         const clinic = clinics.find(c => c.id === event.target.value);
-        console.log(clinic)
+        // console.log(clinic)
         setReservation(prev => ({ ...prev, clinicName: clinic?.name || "" }));
     };
 
@@ -180,6 +190,12 @@ const ServiceDetail = () => {
         } else {
             const clinic = clinics?.find(c => c.id === selectedClinic);
             if (clinic) {
+                const enabledDays = clinic.schedule_week.map(day => weekDaysMap[day]);
+                const selectedDay = selectedDate.getDay();
+                if (!enabledDays.includes(selectedDay)) {
+                    setDateError("Seleccione una fecha en un día hábil de la clínica");
+                    isValid = false;
+                }
                 const timeStart = parseInt(clinic.time_start.split(':')[0], 10);
                 const timeEnd = parseInt(clinic.time_end.split(':')[0], 10);
                 const selectedHour = selectedTime.getHours();
@@ -237,7 +253,15 @@ const ServiceDetail = () => {
         sendSchedule();
     };
 
-    if(!selectedService){
+    const isDayDisabled = (date) => {
+        const day = date.getDay();
+        const clinic = clinics.find(c => c.id === selectedClinic);
+
+        const enabledDays = clinic?.schedule_week?.map(day => weekDaysMap[day]);
+        return !enabledDays.includes(day);
+    };
+
+    if (!selectedService) {
         return <Navigate to="/services" />
     }
 
@@ -346,6 +370,7 @@ const ServiceDetail = () => {
                                     }}
                                     renderInput={(params) => <TextField fullWidth {...params} />}
                                     minDate={startOfToday()}
+                                    shouldDisableDate={isDayDisabled}
                                 />
                                 {dateError && (
                                     <FormHelperText error>{dateError}</FormHelperText>
