@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import useAuth from 'hooks/useAuth';
 import { useEffect } from 'react';
 import usePetStore from 'store/usePetStore';
+import Avatar from 'components/@extended/Avatar';
 
 const ServicesList = () => {
     const theme = useTheme();
@@ -87,7 +88,11 @@ const ServicesList = () => {
                                         navigate(`/services/detail/${service.id}`)
                                     }}
                                 >
-                                    <span style={{ color: theme.palette.primary.main }}>{service.img || <Briefcase size="32" variant="Bulk" />} </span>
+                                    {!service?.img ? (
+                                        <span style={{ color: theme.palette.primary.main }}><Briefcase size="32" variant="Bulk" /></span>
+                                    ) : (
+                                        <Avatar src={service.img} />
+                                    )}
                                     <Typography variant="h6" align="left" sx={{ ml: 2, fontWeight: "500" }}>
                                         {service.name}
                                     </Typography>

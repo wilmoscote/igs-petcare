@@ -280,7 +280,11 @@ const ServiceDetail = () => {
                 <Box minWidth={"100%"}>
                     <Typography variant='h3' gutterBottom>Detalles del servicio: </Typography>
                     <Stack direction="row" alignItems="center" spacing={2} mt={3}>
-                        {service?.icon || <Briefcase color={theme.palette.primary.main} size="32" variant="Bulk" />}
+                        {!service?.img ? (
+                            <span style={{ color: theme.palette.primary.main }}><Briefcase size="32" variant="Bulk" /></span>
+                        ) : (
+                            <Avatar src={service.img} />
+                        )}
                         <Typography variant="h4">{service?.name}</Typography>
                     </Stack>
                     <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
