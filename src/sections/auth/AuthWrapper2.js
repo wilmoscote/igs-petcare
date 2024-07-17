@@ -9,8 +9,7 @@ import AuthCard from './AuthCard';
 
 // assets
 import AuthSideImg from 'assets/images/auth/img-auth-sideimg.png';
-import PetAuthImg from 'assets/images/auth/petAuthImg.webp';
-import PetAuthImg2 from 'assets/images/auth/petAuthImg2.webp';
+import PetAuthImg from 'assets/images/loginSectionBg.jpg';
 
 // ==============================|| AUTHENTICATION - WRAPPER ||============================== //
 
