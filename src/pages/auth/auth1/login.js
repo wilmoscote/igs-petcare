@@ -22,6 +22,7 @@ import { useState } from 'react';
 import { PopupTransition } from 'components/@extended/Transitions';
 import useClinicStore from 'store/useClinicStore';
 import { useEffect } from 'react';
+import AuthWrapper2 from 'sections/auth/AuthWrapper2';
 
 // ================================|| LOGIN ||================================ //
 
@@ -37,49 +38,23 @@ const Login = () => {
   }, [user])
 
   return (
-    <AuthWrapper>
+    <AuthWrapper2>
       <Grid container spacing={3}>
         <Grid item xs={12} sx={{ textAlign: 'center' }}>
+          {/* <Logo /> */}
           <img src={IgsLogo} alt="IGS Logo" width={60} style={{ marginBottom: "-10px" }} />
         </Grid>
-        {/* <Grid item xs={12}>
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <AuthSocButton>
-                <img src={imgFacebook} alt="Facebook" style={{ margin: '0 10px' }} /> Sign In with Facebook
-              </AuthSocButton>
-            </Grid>
-            <Grid item xs={12}>
-              <AuthSocButton>
-                <img src={imgTwitter} alt="Facebook" style={{ margin: '0 10px' }} /> Sign In with Twitter
-              </AuthSocButton>
-            </Grid>
-            <Grid item xs={12}>
-              <AuthSocButton>
-                <img src={imgGoogle} alt="Facebook" style={{ margin: '0 10px' }} /> Sign In with Google
-              </AuthSocButton>
-            </Grid>
-          </Grid>
-        </Grid> */}
-        {/* <Grid item xs={12}>
-          <AuthDivider>
-            <Typography variant="body1">OR</Typography>
-          </AuthDivider>
-        </Grid> 
-        
-        aquavet@admin.com
-        */}
         <Grid item xs={12}>
-          <Stack justifyContent="left" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
-            <Typography variant="h3" mb={0.5}>Inicio de sesión</Typography>
-            <Typography variant="body1">Clínicas</Typography>
+          <Stack justifyContent="baseline" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
+            <Typography variant="h3" mb={0.3}>Iniciar sesión</Typography>
+            <Typography variant="body">Clínicas</Typography>
           </Stack>
         </Grid>
         <Grid item xs={12}>
           <AuthLoginClinic forgot="/auth/forgot-password" />
         </Grid>
       </Grid>
-    </AuthWrapper>
+    </AuthWrapper2>
   );
 };
 
