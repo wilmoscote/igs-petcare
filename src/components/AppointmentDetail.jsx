@@ -58,6 +58,7 @@ const AppointmentDetail = ({ booking, onChange, selected }) => {
                         <Typography variant="body1"><strong>Dirección:</strong> {booking?.user?.address || ""}</Typography>
                         <Typography variant="body1"><strong>Email:</strong> {booking?.user?.email || ""}</Typography>
                         <Typography variant="body1"><strong>Teléfono:</strong> {booking?.user?.phone || ""}</Typography>
+                        <Typography variant="body1"><strong>Plan:</strong> {booking?.user?.client_assistance_plan?.assistance_plan?.name || ""}</Typography>
                         <Button variant={theme.palette.mode === ThemeMode.LIGHT ? "outlined" : "contained"} endIcon={<Personalcard variant='Bold' />} sx={{ fontWeight: "500", textTransform: "none", mt: 1 }} onClick={() => setIsModalOpen(true)}>Ver perfil de dueño</Button>
                     </Box>
                 </Stack>

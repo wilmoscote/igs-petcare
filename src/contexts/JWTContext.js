@@ -395,7 +395,21 @@ export const JWTProvider = ({ children }) => {
     return axios.get(`/clinic/booking/list/${user?.clinic[0]?.uuid}`, { ...config, params: filteredParams });
   }
 
-  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile, createOtp, validateOtp, getPets, getSpecies, createPet, deletePet, editPet, getClinics, getServices, createSchedule, getBookingList, loginClinic, getClinicBookingList, getPetBookingList, changeBookingStatus, getClinicBookingListCalendar }}>{children}</JWTContext.Provider>;
+  const validateUserBooking = async () => {
+    const currentTokens = useAuthStore.getState();
+    const { token, user } = currentTokens;
+
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token ?? ""}`
+      }
+    };
+
+
+    return axios.get(`/user/booking/validate/${user?.uuid}`, config);
+  }
+
+  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile, createOtp, validateOtp, getPets, getSpecies, createPet, deletePet, editPet, getClinics, getServices, createSchedule, getBookingList, loginClinic, getClinicBookingList, getPetBookingList, changeBookingStatus, getClinicBookingListCalendar, validateUserBooking }}>{children}</JWTContext.Provider>;
 };
 
 

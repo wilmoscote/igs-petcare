@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { dispatch } from 'store';
+import { LOGOUT } from 'store/reducers/actions';
 import { useAuthStore } from 'store/useAuthStore';
 import useClinicStore from 'store/useClinicStore';
 

@@ -20,6 +20,7 @@ import { ThemeMode } from 'config';
 import avatar1 from 'assets/images/users/avatar-6.png';
 import { Setting2, Profile, Logout } from 'iconsax-react';
 import { useAuthStore } from 'store/useAuthStore';
+import { formatToDate } from 'utils/petUtils';
 
 // tab panel wrapper
 function TabPanel(props) {
@@ -114,8 +115,8 @@ const ProfilePage = () => {
           <Avatar alt="profile user" src={avatar1} />
           <Stack>
             <Typography variant="subtitle1" color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"} textAlign={"left"}>{user?.name ?? "Usuario"}</Typography>
-            <Typography variant="body2" color="secondary" textAlign={"left"}>
-              Cliente
+            <Typography variant="body2" color="secondary" fontWeight={"600"} textAlign={"left"}>
+              {user?.client_assistance_plan?.assistance_plan?.name || "Cliente"}
             </Typography>
           </Stack>
         </Stack>
@@ -162,7 +163,7 @@ const ProfilePage = () => {
                           <Stack>
                             <Typography variant="subtitle1">{user?.name || "Usuario"}</Typography>
                             <Typography variant="body2" color="secondary">
-                              Cliente
+                              {user?.client_assistance_plan?.assistance_plan?.name || "Cliente"}
                             </Typography>
                           </Stack>
                         </Stack>
@@ -177,7 +178,7 @@ const ProfilePage = () => {
                     </Grid>
                   </CardContent>
 
-                  {/* <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
                       <Tab
                         sx={{
@@ -188,29 +189,30 @@ const ProfilePage = () => {
                           textTransform: 'capitalize'
                         }}
                         icon={<Profile size={18} style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Profile"
+                        label="Información del Plan"
                         {...a11yProps(0)}
                       />
-                      <Tab
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          textTransform: 'capitalize'
-                        }}
-                        icon={<Setting2 size={18} style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Setting"
-                        {...a11yProps(1)}
-                      />
                     </Tabs>
-                  </Box> */}
-                  {/* <TabPanel value={value} index={0} dir={theme.direction}>
-                    <ProfileTab handleLogout={handleLogout} />
+                  </Box>
+                  <TabPanel value={value} index={0} dir={theme.direction}>
+                    <Stack>
+                      <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
+                        Plan: {user?.client_assistance_plan?.assistance_plan?.name || "Cliente"}
+                      </Typography>
+                      <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
+                        Total asistencias: {user?.client_assistance_plan?.assistance_plan?.assistance_total || ""}
+                      </Typography>
+                      <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
+                        Asistencias solicitadas: {user?.client_assistance_plan?.count_assistance_used || ""}
+                      </Typography>
+                      <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
+                        Periodo plan:
+                      </Typography>
+                      <Typography variant="body1" px={2} py={0.3} mb={0.5} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
+                        {formatToDate(user?.client_assistance_plan?.start_date_period) || ""} -  {formatToDate(user?.client_assistance_plan?.end_date_period) || ""}
+                      </Typography>
+                    </Stack>
                   </TabPanel>
-                  <TabPanel value={value} index={1} dir={theme.direction}>
-                    <SettingTab />
-                  </TabPanel> */}
                 </MainCard>
               </ClickAwayListener>
             </Paper>
