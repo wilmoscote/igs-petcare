@@ -27,6 +27,8 @@ const AppointmentDetail = ({ booking, onChange, selected }) => {
         setOpenAlert(!openAlert);
     };
 
+    console.log(booking)
+
     return (
         <Box sx={{ p: 3 }}>
             <Typography variant="h5" gutterBottom>Información de la Mascota</Typography>
@@ -71,9 +73,15 @@ const AppointmentDetail = ({ booking, onChange, selected }) => {
                 <Typography variant="body1" gutterBottom>Fecha: <strong>{format(new Date(booking.date), 'yyyy-MM-dd HH:mm:ss')}</strong></Typography>
                 <Typography variant="body1" gutterBottom>Información Adicional: <strong>{booking.additional_info || 'N/A'}</strong></Typography>
                 <Typography variant="body1">Contacto Adicional:<strong> {booking?.additional_contact}</strong></Typography>
+                {booking?.status?.toLowerCase() !== 'active' && (
+                    <Stack direction={"row"} alignItems="center" justifyContent={"start"} mt={1}>
+                        <TickCircle variant="Bold" color="#37D67A" /> <Typography variant="body1" ml={1}><strong> Cita Cumplida</strong></Typography>
+                    </Stack>
+                )}
             </MainCard>
-
-            <Button fullWidth variant="contained" color="success" endIcon={<TickCircle variant="Bold" />} sx={{ fontWeight: "600", textTransform: "none" }} onClick={() => setOpenAlert(true)}>Marcar como cumplida</Button>
+            {booking?.status?.toLowerCase() === 'active' && (
+                <Button fullWidth variant="contained" color="success" endIcon={<TickCircle variant="Bold" />} sx={{ fontWeight: "600", textTransform: "none" }} onClick={() => setOpenAlert(true)}>Marcar como cumplida</Button>
+            )}
             <Dialog
                 maxWidth="md"
                 fullWidth
