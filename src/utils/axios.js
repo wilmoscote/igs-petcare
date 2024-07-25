@@ -4,7 +4,7 @@ import { LOGOUT } from 'store/reducers/actions';
 import { useAuthStore } from 'store/useAuthStore';
 import useClinicStore from 'store/useClinicStore';
 
-const axiosServices = axios.create({ baseURL: process.env.REACT_APP_API_URL || 'https://apiveterinary.3fixesdev.com/api' });
+const axiosServices = axios.create({ baseURL: process.env.REACT_APP_API_URL || 'https://api-vet.igroupsolution.com/api' });
 
 // ==============================|| AXIOS - FOR MOCK SERVICES ||============================== //
 
