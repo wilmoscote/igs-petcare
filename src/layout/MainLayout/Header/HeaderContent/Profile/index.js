@@ -177,42 +177,46 @@ const ProfilePage = () => {
                       </Grid>
                     </Grid>
                   </CardContent>
+                  {user?.client_assistance_plan && (
+                    <>
+                      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
+                          <Tab
+                            sx={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              textTransform: 'capitalize'
+                            }}
+                            icon={<Profile size={18} style={{ marginBottom: 0, marginRight: '10px' }} />}
+                            label="Información del Plan"
+                            {...a11yProps(0)}
+                          />
+                        </Tabs>
+                      </Box>
+                      <TabPanel value={value} index={0} dir={theme.direction}>
+                        <Stack>
+                          <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
+                            Plan: {user?.client_assistance_plan?.assistance_plan?.name || "Cliente"}
+                            <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
+                              Total asistencias: {user?.client_assistance_plan?.assistance_plan?.assistance_total || ""}
+                            </Typography>
+                            <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
+                              Asistencias solicitadas: {user?.client_assistance_plan?.count_assistance_used || ""}
+                            </Typography>
+                            <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
+                              Periodo plan:
+                            </Typography>
+                            <Typography variant="body1" px={2} py={0.3} mb={0.5} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
+                              {formatToDate(user?.client_assistance_plan?.start_date_period) || ""} -  {formatToDate(user?.client_assistance_plan?.end_date_period) || ""}
+                            </Typography>
 
-                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
-                      <Tab
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          textTransform: 'capitalize'
-                        }}
-                        icon={<Profile size={18} style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Información del Plan"
-                        {...a11yProps(0)}
-                      />
-                    </Tabs>
-                  </Box>
-                  <TabPanel value={value} index={0} dir={theme.direction}>
-                    <Stack>
-                      <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
-                        Plan: {user?.client_assistance_plan?.assistance_plan?.name || "Cliente"}
-                      </Typography>
-                      <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
-                        Total asistencias: {user?.client_assistance_plan?.assistance_plan?.assistance_total || ""}
-                      </Typography>
-                      <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
-                        Asistencias solicitadas: {user?.client_assistance_plan?.count_assistance_used || ""}
-                      </Typography>
-                      <Typography variant="body1" px={2} py={0.3} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
-                        Periodo plan:
-                      </Typography>
-                      <Typography variant="body1" px={2} py={0.3} mb={0.5} color={theme.palette.mode === ThemeMode.LIGHT ? "black" : "white"}>
-                        {formatToDate(user?.client_assistance_plan?.start_date_period) || ""} -  {formatToDate(user?.client_assistance_plan?.end_date_period) || ""}
-                      </Typography>
-                    </Stack>
-                  </TabPanel>
+                          </Typography>
+                        </Stack>
+                      </TabPanel>
+                    </>
+                  )}
                 </MainCard>
               </ClickAwayListener>
             </Paper>

@@ -26,11 +26,13 @@ export const formatAge = (birthday_date) => {
 };
 
 export const formatToTime = (dateString) => {
+  if (!dateString) return
   const parsedDate = parse(dateString, 'yyyy-MM-dd HH:mm:ss', new Date());
   return format(parsedDate, 'h:mm a');
 };
 
 export const formatToDate = (dateString) => {
+  if (!dateString) return
   const parsedDate = parse(dateString, 'yyyy-MM-dd HH:mm:ss', new Date());
   return format(parsedDate, 'dd MMM, yyyy', { locale: es });
 };
